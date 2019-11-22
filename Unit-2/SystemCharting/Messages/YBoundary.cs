@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms.DataVisualization.Charting;
-
-namespace ChartApp.Messages
+﻿namespace ChartApp.Messages
 {
     /// <summary>
-    /// Indicate Y boundary may changed.
+    /// Y-axis boundary
     /// </summary>
     sealed class YBoundary
     {
-        public YBoundary(IEnumerable<Series> series)
+        public YBoundary(double minValue, double maxValue)
         {
-            Series = series ?? Enumerable.Empty<Series>();
+            MinValue = minValue;
+            MaxValue = maxValue;
         }
-
-        public IEnumerable<Series> Series { get; }
+        
+        public double MinValue { get; }
+        public double MaxValue { get; }
     }
 }

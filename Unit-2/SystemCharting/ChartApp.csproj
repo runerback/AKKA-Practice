@@ -47,16 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\ButtonToggleActor.cs" />
+    <Compile Include="Actors\CounterButtonToggleActor.cs" />
     <Compile Include="Actors\ChartBoundariesActor.cs" />
     <Compile Include="Actors\ChartCoordinatorActor.cs" />
     <Compile Include="Actors\ChartingActor.cs" />
     <Compile Include="Actors\ChartRenderActor.cs" />
+    <Compile Include="Actors\PauseButtonToggleActor.cs" />
     <Compile Include="Actors\PerformanceCounterActor.cs" />
     <Compile Include="Actors\PerformanceCounterCoordinatorActor.cs" />
     <Compile Include="Actors\ToggleCoordinatorActor.cs" />
     <Compile Include="ChartAreaHelper.cs" />
-    <Compile Include="ChartDataHelper.cs" />
     <Compile Include="CounterSeriesFactory.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -76,7 +76,9 @@
     <Compile Include="Messages\Metric.cs" />
     <Compile Include="Messages\RemoveSeries.cs" />
     <Compile Include="Messages\SubscribeCounter.cs" />
-    <Compile Include="Messages\Toggle.cs" />
+    <Compile Include="Messages\ToggleButton.cs" />
+    <Compile Include="Messages\ToggleCounter.cs" />
+    <Compile Include="Messages\TogglePause.cs" />
     <Compile Include="Messages\UnsubscribeCounter.cs" />
     <Compile Include="Messages\Unwatch.cs" />
     <Compile Include="Messages\Watch.cs" />

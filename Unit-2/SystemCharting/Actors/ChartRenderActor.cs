@@ -1,29 +1,31 @@
 ﻿using Akka.Actor;
 using ChartApp.Messages;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ChartApp.Actors
 {
     sealed class ChartRenderActor : ReceiveActor
     {
+        private int maxPointCount = 0;
+        private int xAxisPosition = 0;
+
         public ChartRenderActor()
         {
+            Receive<MaxPoints>(maxPoints => maxPointCount = maxPoints.Value);
+            Receive<XAxisCounter>(counter => xAxisPosition = counter.Value);
+
             Receive<ChartRender>(message => Render(message));
         }
 
         private void Render(ChartRender message)
         {
-            var series = message.Series;
+            var points = message.Series.Points;
+            if (points == null)
+                return;
 
-            if (message.Chart.TryGetFirstArea(out ChartArea area))
-            {
-                var xPosCounter = (int)area.AxisX.Minimum;
-                series.Points.AddXY(xPosCounter, message.Counter);
+            points.AddXY(xAxisPosition, message.Counter);
 
-                var maxPoints = (int)area.AxisX.Maximum;
-                while (series.Points.Count > maxPoints)
-                    series.Points.RemoveAt(0);
-            }
+            while (points.Count > maxPointCount)
+                points.RemoveAt(0);
         }
     }
 }

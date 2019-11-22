@@ -1,6 +1,5 @@
 ﻿using Akka.Actor;
 using ChartApp.Messages;
-using System;
 using System.Collections.Generic;
 
 namespace ChartApp.Actors
@@ -10,26 +9,33 @@ namespace ChartApp.Actors
         private readonly IActorRef _toggleCoordinatorActor;
 
         private IActorRef _chartActor;
-        private IActorRef _coordinatorActor;
+        private IActorRef _counterCoordinatorActor;
 
-        public ChartCoordinatorActor(IActorRef toggleCoordinatorActor)
+        public ChartCoordinatorActor()
         {
-            _toggleCoordinatorActor = toggleCoordinatorActor ??
-                throw new ArgumentNullException(nameof(toggleCoordinatorActor));
+            _toggleCoordinatorActor = Context.ActorOf(
+                Props.Create<ToggleCoordinatorActor>()
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"),
+                "toggleCoor");
 
             Receive<Load>(load => HandleLoad(load));
             Receive<Exit>(message => HandleExit(message));
+
+            Receive<ToggleCounter>(toggle => HandleCounterToggle(toggle));
+            Receive<TogglePause>(toggle => HandlePauseToggle(toggle));
         }
 
         private void HandleLoad(Load load)
         {
-            _chartActor = Program.ChartActors.ActorOf(
-                Props.Create<ChartingActor>(load.Chart),
+            _chartActor = Context.ActorOf(
+                Props.Create<ChartingActor>(load.Chart)
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"),
                 "charting");
             _chartActor.Tell(new InitializeChart()); //no initial series
 
-            _coordinatorActor = Program.ChartActors.ActorOf(
-                Props.Create<PerformanceCounterCoordinatorActor>(_chartActor),
+            _counterCoordinatorActor = Context.ActorOf(
+                Props.Create<PerformanceCounterCoordinatorActor>(_chartActor)
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"),
                 "counters");
 
             var toggleActors = new Dictionary<CounterType, IActorRef>()
@@ -37,31 +43,45 @@ namespace ChartApp.Actors
                 {
                     // CPU button toggle actor
                     CounterType.Cpu,
-                    Program.ChartActors.ActorOf(
-                        Props.Create<ButtonToggleActor>(_coordinatorActor)
+                    Context.ActorOf(
+                        Props.Create<CounterButtonToggleActor>(_counterCoordinatorActor)
                             .WithDispatcher("akka.actor.synchronized-dispatcher"))
                 },
                 {
                     // MEMORY button toggle actor
                     CounterType.Memory,
-                    Program.ChartActors.ActorOf(
-                        Props.Create<ButtonToggleActor>(_coordinatorActor)
+                    Context.ActorOf(
+                        Props.Create<CounterButtonToggleActor>(_counterCoordinatorActor)
                             .WithDispatcher("akka.actor.synchronized-dispatcher"))
                 },
                 {
                     // DISK button toggle actor
                     CounterType.Disk,
-                    Program.ChartActors.ActorOf(
-                        Props.Create<ButtonToggleActor>(_coordinatorActor)
+                    Context.ActorOf(
+                        Props.Create<CounterButtonToggleActor>(_counterCoordinatorActor)
                             .WithDispatcher("akka.actor.synchronized-dispatcher"))
                 }
             };
-            
+
             _toggleCoordinatorActor.Tell(new InitializeToggles(toggleActors));
+        }
+
+        private void HandlePauseToggle(TogglePause toggle)
+        {
+            _chartActor.Tell(toggle);
+            _toggleCoordinatorActor.Tell(toggle);
+        }
+
+        private void HandleCounterToggle(ToggleCounter toggle)
+        {
+            _toggleCoordinatorActor.Tell(toggle);
         }
 
         private void HandleExit(Exit message)
         {
+            //shut down the toggle coordinator actor
+            _toggleCoordinatorActor.Tell(PoisonPill.Instance);
+
             //shut down the charting actor
             _chartActor.Tell(PoisonPill.Instance);
         }

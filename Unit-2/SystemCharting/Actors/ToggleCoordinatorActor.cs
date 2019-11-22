@@ -11,17 +11,20 @@ namespace ChartApp.Actors
         /// <summary>
         /// Stash toggles before initialized.
         /// </summary>
-        private List<Toggle> _stashedToggles;
+        private List<ToggleCounter> _stashedCounterToggles;
 
-        private readonly IDictionary<CounterType, IActorRef> _toggleActors =
+        private readonly IDictionary<CounterType, IActorRef> _counterToggleActors =
             new Dictionary<CounterType, IActorRef>();
+
+        private IActorRef pauseToggleActor;
 
         public ToggleCoordinatorActor()
         {
             Receive<InitializeToggles>(message => HandleInitialized(message));
-            Receive<Toggle>(
-                toggle => !_initialized || _toggleActors.ContainsKey(toggle.CounterType),
-                toggle => HandleToggle(toggle));
+            Receive<ToggleCounter>(
+                toggle => !_initialized || _counterToggleActors.ContainsKey(toggle.CounterType),
+                toggle => HandleCounterToggle(toggle));
+            Receive<TogglePause>(toggle => HandlePauseToggle(toggle));
         }
 
         private void HandleInitialized(InitializeToggles message)
@@ -29,36 +32,46 @@ namespace ChartApp.Actors
             if (_initialized)
                 return;
 
-            _toggleActors.Clear();
+            _counterToggleActors.Clear();
             foreach (var pairs in message.Toggles)
-                _toggleActors.Add(pairs);
+                _counterToggleActors.Add(pairs);
 
             _initialized = true;
 
-            if (_stashedToggles != null)
+            if (_stashedCounterToggles != null)
             {
-                var toggles = _stashedToggles.ToArray();
-                _stashedToggles = null;
+                var toggles = _stashedCounterToggles.ToArray();
+                _stashedCounterToggles = null;
 
                 foreach (var toggle in toggles)
                 {
                     Self.Tell(toggle);
                 }
             }
+
+            pauseToggleActor = Context.ActorOf(
+                Props.Create<PauseButtonToggleActor>()
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"),
+                "pauseToggle");
         }
 
-        private void HandleToggle(Toggle toggle)
+        private void HandleCounterToggle(ToggleCounter toggle)
         {
             if (!_initialized)
             {
-                if (_stashedToggles == null)
-                    _stashedToggles = new List<Toggle>();
-                _stashedToggles.Add(toggle);
+                if (_stashedCounterToggles == null)
+                    _stashedCounterToggles = new List<ToggleCounter>();
+                _stashedCounterToggles.Add(toggle);
             }
             else
             {
-                _toggleActors[toggle.CounterType].Tell(toggle);
+                _counterToggleActors[toggle.CounterType].Tell(toggle);
             }
+        }
+
+        private void HandlePauseToggle(TogglePause toggle)
+        {
+            pauseToggleActor.Tell(toggle);
         }
     }
 }

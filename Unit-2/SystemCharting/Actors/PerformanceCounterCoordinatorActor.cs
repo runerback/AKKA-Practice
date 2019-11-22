@@ -13,36 +13,38 @@ namespace ChartApp.Actors
         private readonly IDictionary<CounterType, IActorRef> _counterActors =
             new Dictionary<CounterType, IActorRef>();
         private IActorRef _chartingActor;
-        
+
         public PerformanceCounterCoordinatorActor(IActorRef chartingActor)
         {
             _chartingActor = chartingActor;
-            
+
             Receive<Watch>(watch => HandleWatch(watch));
             Receive<Unwatch>(unwatch => HandleUnwatch(unwatch));
         }
 
         private void HandleWatch(Watch watch)
         {
-            if (!_counterActors.ContainsKey(watch.Counter))
+            if (!_counterActors.ContainsKey(watch.CounterType))
             {
                 // create a child actor to monitor this counter if
                 // one doesn't exist already
-                var counterActor = Context.ActorOf(Props.Create<PerformanceCounterActor>(
-                    watch.Counter.ToString(),
-                    PerformanceCounterFactoryPool.GetFactory(watch.Counter)));
+                var counterActor = Context.ActorOf(
+                    Props.Create<PerformanceCounterActor>(
+                        watch.CounterType.ToString(),
+                        PerformanceCounterFactoryPool.GetFactory(watch.CounterType)),
+                    $"{watch.CounterType}CounterActor");
 
                 // add this counter actor to our index
-                _counterActors[watch.Counter] = counterActor;
+                _counterActors[watch.CounterType] = counterActor;
             }
 
             // register this series with the ChartingActor
-            _chartingActor.Tell(new AddSeries(CounterSeriesFactory.GetSeries(watch.Counter)));
+            _chartingActor.Tell(new AddSeries(CounterSeriesFactory.GetSeries(watch.CounterType)));
 
             // tell the counter actor to begin publishing its
             // statistics to the _chartingActor
-            _counterActors[watch.Counter].Tell(
-                new SubscribeCounter(watch.Counter,
+            _counterActors[watch.CounterType].Tell(
+                new SubscribeCounter(watch.CounterType,
                 _chartingActor));
         }
 

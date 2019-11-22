@@ -22,52 +22,21 @@ namespace ChartApp.Actors
         private void SetMaxXAxis(XAxisCounter counter)
         {
             if (_chart.TryGetFirstArea(out ChartArea area))
-            {
-                try
-                {
-                    area.AxisX.Maximum = counter.Value;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{Self.Path}XAxisCounter: {ex}");
-                }
-            }
+                area.AxisX.Maximum = counter.Value;
         }
 
         private void SetMinXAxis(MaxPoints maxPoints)
         {
             if (_chart.TryGetFirstArea(out ChartArea area))
-            {
-                try
-                {
-                    area.AxisX.Minimum = area.AxisX.Maximum - maxPoints.Value;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{Self.Path}MaxPoints: {ex}");
-                }
-            }
+                area.AxisX.Minimum = Math.Max(0, area.AxisX.Maximum - maxPoints.Value);
         }
 
-        private void SetChartYBoundaries(YBoundary message)
+        private void SetChartYBoundaries(YBoundary boundary)
         {
-            var allPoints = message.Series.SelectMany(series => series.Points).ToArray();
-            if (allPoints.Length > 2)
+            if (_chart.TryGetFirstArea(out ChartArea area))
             {
-                var yValues = allPoints.SelectMany(point => point.YValues).ToArray();
-
-                if (_chart.TryGetFirstArea(out ChartArea area))
-                {
-                    try
-                    {
-                        area.AxisY.Minimum = yValues.Length > 0 ? Math.Floor(yValues.Min()) : 0.0d;
-                        area.AxisY.Maximum = yValues.Length > 0 ? Math.Ceiling(yValues.Max()) : 1.0d;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"{Self.Path}YBoundary: {ex}");
-                    }
-                }
+                area.AxisY.Minimum = Math.Floor(boundary.MinValue);
+                area.AxisY.Maximum = Math.Ceiling(boundary.MaxValue);
             }
         }
     }

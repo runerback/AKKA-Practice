@@ -12,6 +12,8 @@ namespace ChartApp.Actors
         private readonly IActorRef _chartBoundariesActor;
         private readonly IActorRef chartRenderActor;
 
+        private readonly MaxPoints maxPoints = new MaxPoints();
+
         private IDictionary<string, Series> _seriesIndex = new Dictionary<string, Series>();
 
         private int xPosCounter = 0;
@@ -22,13 +24,19 @@ namespace ChartApp.Actors
 
             _chartBoundariesActor = Context.ActorOf(
                 Props.Create<ChartBoundariesActor>(_chart)
-                    .WithDispatcher("akka.actor.synchronized-dispatcher"));
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"),
+                "chartBoundaries");
 
-            chartRenderActor = Program.ChartActors.ActorOf(
+            chartRenderActor = Context.ActorOf(
                 Props.Create<ChartRenderActor>()
                     .WithDispatcher("akka.actor.synchronized-dispatcher"),
                 "chartRender");
 
+            Charting();
+        }
+
+        private void Charting()
+        {
             Receive<InitializeChart>(ic => HandleInitialize(ic));
             Receive<AddSeries>(
                 addSeries =>
@@ -40,8 +48,26 @@ namespace ChartApp.Actors
                     !string.IsNullOrEmpty(series.SeriesName) &&
                     _seriesIndex.ContainsKey(series.SeriesName),
                 series => HandleRemoveSeries(series));
-            Receive<Metric>(metric => HandleMetrics(metric));
-            Receive<PoisonPill>(thePill => TakePoisonPill(thePill));
+            Receive<Metric>(
+                metric => !string.IsNullOrEmpty(metric.Series),
+                metric => HandleMetrics(metric, false));
+
+            //new receive handler for the TogglePause message type
+            Receive<TogglePause>(pause =>
+            {
+                BecomeStacked(Paused);
+            });
+        }
+
+        private void Paused()
+        {
+            Receive<Metric>(
+                metric => !string.IsNullOrEmpty(metric.Series),
+                metric => HandleMetrics(metric, true));
+            Receive<TogglePause>(pause =>
+            {
+                UnbecomeStacked();
+            });
         }
 
         #region Individual Message Type Handlers
@@ -73,9 +99,14 @@ namespace ChartApp.Actors
                 }
             }
 
-            _chartBoundariesActor.Tell(new MaxPoints());
-            _chartBoundariesActor.Tell(new XAxisCounter());
-            UpdateYBoundaries();
+            var xAxisCounter = new XAxisCounter();
+
+            _chartBoundariesActor.Tell(maxPoints);
+            _chartBoundariesActor.Tell(xAxisCounter);
+            SetYBoundary();
+
+            chartRenderActor.Tell(maxPoints);
+            chartRenderActor.Tell(xAxisCounter);
         }
 
         private void HandleAddSeries(AddSeries series)
@@ -83,7 +114,7 @@ namespace ChartApp.Actors
             _seriesIndex.Add(series.Series.Name, series.Series);
             _chart.Series.Add(series.Series);
 
-            UpdateYBoundaries();
+            SetYBoundary();
         }
 
         private void HandleRemoveSeries(RemoveSeries series)
@@ -93,34 +124,56 @@ namespace ChartApp.Actors
             _seriesIndex.Remove(series.SeriesName);
             _chart.Series.Remove(seriesToRemove);
 
-            UpdateYBoundaries();
+            SetYBoundary();
         }
 
-        private void HandleMetrics(Metric metric)
+        private void HandleMetrics(Metric metric, bool paused)
         {
-            _chartBoundariesActor.Tell(new XAxisCounter(xPosCounter++));
-            _chartBoundariesActor.Tell(metric);
-            UpdateYBoundaries();
-
-            var series = _seriesIndex[metric.Series];
-            if (series != null)
+            if (_seriesIndex.TryGetValue(metric.Series, out Series series))
             {
                 chartRenderActor.Tell(
-                    new ChartRender(_chart, series, metric.CounterValue));
+                    new ChartRender(series, paused ? 0 : metric.CounterValue));
             }
+
+            var xAxisCounter = new XAxisCounter(xPosCounter++);
+
+            _chartBoundariesActor.Tell(xAxisCounter);
+            _chartBoundariesActor.Tell(maxPoints);
+            SetYBoundary();
+
+            chartRenderActor.Tell(xAxisCounter);
+            chartRenderActor.Tell(maxPoints);
         }
 
-        private void UpdateYBoundaries()
+        private void SetYBoundary()
         {
-            _chartBoundariesActor.Tell(new YBoundary(_seriesIndex.Values.ToArray()));
+            var allPoints = _seriesIndex.Values
+                .SelectMany(series => series?.Points ?? Enumerable.Empty<DataPoint>())
+                .ToArray();
+            if (allPoints.Length < 3)
+                return;
+
+            var yValues = allPoints.SelectMany(point => point.YValues).ToArray();
+            if (yValues.Length < 3)
+            {
+                _chartBoundariesActor.Tell(new YBoundary(0, 1));
+                return;
+            }
+
+            double min = double.MaxValue, max = double.MinValue;
+
+            foreach (var value in yValues)
+            {
+                if (value > max)
+                    max = value;
+
+                if (value < min)
+                    min = value;
+            }
+
+            _chartBoundariesActor.Tell(new YBoundary(min, max));
         }
 
         #endregion
-
-        private void TakePoisonPill(PoisonPill thePill)
-        {
-            chartRenderActor.Tell(thePill);
-            _chartBoundariesActor.Tell(thePill);
-        }
     }
 }

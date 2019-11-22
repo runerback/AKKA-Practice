@@ -6,35 +6,34 @@ namespace ChartApp.Actors
     /// <summary>
     /// Actor responsible for managing button toggles
     /// </summary>
-    sealed class ButtonToggleActor : ReceiveActor
+    sealed class CounterButtonToggleActor : ReceiveActor
     {
-        private readonly IActorRef _coordinatorActor;
+        private readonly IActorRef _counterCoorActor;
 
         private bool _isToggledOn = false;
 
-        public ButtonToggleActor(IActorRef coordinatorActor)
+        public CounterButtonToggleActor(IActorRef counterCoorActor)
         {
-            _coordinatorActor = coordinatorActor;
+            _counterCoorActor = counterCoorActor;
 
-            Receive<Toggle>(toggle => HandleToggleMessage(toggle));
-            ReceiveAny(message => Unhandled(message));
+            Receive<ToggleCounter>(toggle => HandleToggleCounterMessage(toggle));
         }
 
-        private void HandleToggleMessage(Toggle toggle)
+        private void HandleToggleCounterMessage(ToggleCounter toggle)
         {
             if (_isToggledOn)
             {
                 // toggle is currently on
 
                 // stop watching this counter
-                _coordinatorActor.Tell(new Unwatch(toggle.CounterType));
+                _counterCoorActor.Tell(new Unwatch(toggle.CounterType));
             }
             else
             {
                 // toggle is currently off
 
                 // start watching this counter
-                _coordinatorActor.Tell(new Watch(toggle.CounterType));
+                _counterCoorActor.Tell(new Watch(toggle.CounterType));
             }
 
             // flip the toggle

@@ -8,15 +8,13 @@ namespace ChartApp.Messages
     /// Toggles this <see cref="Button"/> on or off and sends an appropriate messages
     /// to the <see cref="PerformanceCounterCoordinatorActor"/>
     /// </summary>
-    sealed class Toggle
+    sealed class ToggleCounter : ToggleButton
     {
-        public Toggle(Button button, CounterType counterType)
+        public ToggleCounter(Button button, CounterType counterType) : base(button)
         {
-            Button = button ?? throw new ArgumentNullException(nameof(button));
             CounterType = counterType;
         }
 
-        public Button Button { get; }
         public CounterType CounterType { get; }
     }
 }

@@ -28,36 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.sysChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.diskSwitchButton = new System.Windows.Forms.Button();
             this.memorySwitchButton = new System.Windows.Forms.Button();
             this.cpuSwitchButton = new System.Windows.Forms.Button();
+            this.controlButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.sysChart)).BeginInit();
             this.SuspendLayout();
             // 
             // sysChart
             // 
-            chartArea3.Name = "ChartArea1";
-            this.sysChart.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.sysChart.ChartAreas.Add(chartArea1);
             this.sysChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend3.Name = "Legend1";
-            this.sysChart.Legends.Add(legend3);
+            legend1.Name = "Legend1";
+            this.sysChart.Legends.Add(legend1);
             this.sysChart.Location = new System.Drawing.Point(0, 0);
             this.sysChart.Margin = new System.Windows.Forms.Padding(4);
             this.sysChart.Name = "sysChart";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.sysChart.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.sysChart.Series.Add(series1);
             this.sysChart.Size = new System.Drawing.Size(912, 549);
             this.sysChart.TabIndex = 0;
             this.sysChart.Text = "sysChart";
             // 
             // diskSwitchButton
             // 
+            this.diskSwitchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.diskSwitchButton.Location = new System.Drawing.Point(774, 464);
             this.diskSwitchButton.Name = "diskSwitchButton";
             this.diskSwitchButton.Size = new System.Drawing.Size(107, 45);
@@ -68,6 +70,7 @@
             // 
             // memorySwitchButton
             // 
+            this.memorySwitchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.memorySwitchButton.Location = new System.Drawing.Point(774, 413);
             this.memorySwitchButton.Name = "memorySwitchButton";
             this.memorySwitchButton.Size = new System.Drawing.Size(107, 45);
@@ -78,6 +81,7 @@
             // 
             // cpuSwitchButton
             // 
+            this.cpuSwitchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cpuSwitchButton.Location = new System.Drawing.Point(774, 362);
             this.cpuSwitchButton.Name = "cpuSwitchButton";
             this.cpuSwitchButton.Size = new System.Drawing.Size(107, 45);
@@ -86,11 +90,23 @@
             this.cpuSwitchButton.UseVisualStyleBackColor = true;
             this.cpuSwitchButton.Click += new System.EventHandler(this.cpuSwitchButton_Click);
             // 
+            // controlButton
+            // 
+            this.controlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.controlButton.Location = new System.Drawing.Point(774, 249);
+            this.controlButton.Name = "controlButton";
+            this.controlButton.Size = new System.Drawing.Size(107, 45);
+            this.controlButton.TabIndex = 4;
+            this.controlButton.Text = "PAUSE ||";
+            this.controlButton.UseVisualStyleBackColor = true;
+            this.controlButton.Click += new System.EventHandler(this.controlButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(912, 549);
+            this.Controls.Add(this.controlButton);
             this.Controls.Add(this.cpuSwitchButton);
             this.Controls.Add(this.memorySwitchButton);
             this.Controls.Add(this.diskSwitchButton);
@@ -111,6 +127,7 @@
         private System.Windows.Forms.Button diskSwitchButton;
         private System.Windows.Forms.Button memorySwitchButton;
         private System.Windows.Forms.Button cpuSwitchButton;
+        private System.Windows.Forms.Button controlButton;
     }
 }
 

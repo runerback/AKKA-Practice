@@ -4,15 +4,15 @@ namespace ChartApp.Messages
 {
     /// <summary>
     /// Subscribe the <see cref="ChartingActor"/> to 
-    /// updates for <see cref="Counter"/>.
+    /// updates for <see cref="CounterType"/>.
     /// </summary>
     sealed class Watch
     {
-        public Watch(CounterType counter)
+        public Watch(CounterType counterType)
         {
-            Counter = counter;
+            CounterType = counterType;
         }
 
-        public CounterType Counter { get; }
+        public CounterType CounterType { get; }
     }
 }
