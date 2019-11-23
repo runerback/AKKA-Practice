@@ -4,15 +4,8 @@ using System.Collections.Generic;
 
 namespace ChartApp.Actors
 {
-    sealed class ToggleCoordinatorActor : ReceiveActor
+    sealed class ToggleCoordinatorActor : ReceiveActor, IWithUnboundedStash
     {
-        private bool _initialized = false;
-
-        /// <summary>
-        /// Stash toggles before initialized.
-        /// </summary>
-        private List<ToggleCounter> _stashedCounterToggles;
-
         private readonly IDictionary<CounterType, IActorRef> _counterToggleActors =
             new Dictionary<CounterType, IActorRef>();
 
@@ -20,53 +13,47 @@ namespace ChartApp.Actors
 
         public ToggleCoordinatorActor()
         {
-            Receive<InitializeToggles>(message => HandleInitialized(message));
-            Receive<ToggleCounter>(
-                toggle => !_initialized || _counterToggleActors.ContainsKey(toggle.CounterType),
-                toggle => HandleCounterToggle(toggle));
-            Receive<TogglePause>(toggle => HandlePauseToggle(toggle));
+            Initializing();
+        }
+        
+        IStash IActorStash.Stash { get; set; }
+
+        private void Initializing()
+        {
+            Receive<InitializeToggles>(message =>
+            {
+                HandleInitialize(message);
+                Become(Initialized);
+                ((IWithUnboundedStash)this).Stash.UnstashAll();
+            });
+            Receive<ToggleCounter>(toggle => ((IWithUnboundedStash)this).Stash.Stash());
+            Receive<TogglePause>(toggle => ((IWithUnboundedStash)this).Stash.Stash());
         }
 
-        private void HandleInitialized(InitializeToggles message)
+        private void HandleInitialize(InitializeToggles message)
         {
-            if (_initialized)
-                return;
-
             _counterToggleActors.Clear();
             foreach (var pairs in message.Toggles)
                 _counterToggleActors.Add(pairs);
-
-            _initialized = true;
-
-            if (_stashedCounterToggles != null)
-            {
-                var toggles = _stashedCounterToggles.ToArray();
-                _stashedCounterToggles = null;
-
-                foreach (var toggle in toggles)
-                {
-                    Self.Tell(toggle);
-                }
-            }
-
+            
             pauseToggleActor = Context.ActorOf(
                 Props.Create<PauseButtonToggleActor>()
                     .WithDispatcher("akka.actor.synchronized-dispatcher"),
                 "pauseToggle");
         }
 
+        private void Initialized()
+        {
+            //Receive<InitializeToggles>(_ => { });
+            Receive<ToggleCounter>(
+                toggle => _counterToggleActors.ContainsKey(toggle.CounterType),
+                toggle => HandleCounterToggle(toggle));
+            Receive<TogglePause>(toggle => HandlePauseToggle(toggle));
+        }
+
         private void HandleCounterToggle(ToggleCounter toggle)
         {
-            if (!_initialized)
-            {
-                if (_stashedCounterToggles == null)
-                    _stashedCounterToggles = new List<ToggleCounter>();
-                _stashedCounterToggles.Add(toggle);
-            }
-            else
-            {
-                _counterToggleActors[toggle.CounterType].Tell(toggle);
-            }
+            _counterToggleActors[toggle.CounterType].Tell(toggle);
         }
 
         private void HandlePauseToggle(TogglePause toggle)

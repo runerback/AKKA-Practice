@@ -6,7 +6,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ChartApp.Actors
 {
-    sealed class ChartingActor : ReceiveActor
+    sealed class ChartingActor : ReceiveActor, IWithUnboundedStash
     {
         private readonly Chart _chart;
         private readonly IActorRef _chartBoundariesActor;
@@ -35,6 +35,8 @@ namespace ChartApp.Actors
             Charting();
         }
 
+        IStash IActorStash.Stash { get; set; }
+
         private void Charting()
         {
             Receive<InitializeChart>(ic => HandleInitialize(ic));
@@ -61,12 +63,19 @@ namespace ChartApp.Actors
 
         private void Paused()
         {
+            // while paused, we need to stash AddSeries & RemoveSeries messages
+            Receive<AddSeries>(addSeries => ((IWithUnboundedStash)this).Stash.Stash());
+            Receive<RemoveSeries>(removeSeries => ((IWithUnboundedStash)this).Stash.Stash());
             Receive<Metric>(
                 metric => !string.IsNullOrEmpty(metric.Series),
                 metric => HandleMetrics(metric, true));
             Receive<TogglePause>(pause =>
             {
                 UnbecomeStacked();
+
+                // ChartingActor is leaving the Paused state, put messages back
+                // into mailbox for processing under new behavior
+                ((IWithUnboundedStash)this).Stash.UnstashAll();
             });
         }
 
