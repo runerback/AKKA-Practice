@@ -3,9 +3,9 @@
     /// <summary>
     /// Begin processing a new Github repository for analysis
     /// </summary>
-    sealed class ProcessRepo : RepoAddress
+    sealed class ProcessRepo : RepoKey
     {
-        public ProcessRepo(string repoUri) : base(repoUri)
+        public ProcessRepo(RepoKey other) : base(other)
         {
         }
     }

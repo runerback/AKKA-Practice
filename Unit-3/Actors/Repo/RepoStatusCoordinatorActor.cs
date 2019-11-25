@@ -4,46 +4,51 @@ using System;
 
 namespace GithubActors.Actors
 {
-    sealed class RepoValidateStatusCoordinatorActor : ReceiveActor
+    sealed class RepoStatusCoordinatorActor : ReceiveActor
     {
-        private readonly IActorRef validateStatusActor;
+        private readonly IActorRef repoStatusActor;
         private readonly IActorRef busyStatusActor;
 
-        public RepoValidateStatusCoordinatorActor(
+        public RepoStatusCoordinatorActor(
             Action<string> updateStatus,
             Action<string> updateStatusColor,
             Action<bool> setIsBusy)
         {
-            validateStatusActor = App.UIActors.ActorOf(
-                Props.Create<RepoValidateStatusActor>(updateStatus, updateStatusColor),
-                ActorNames.RepoValidateStatus);
+            repoStatusActor = App.UIActors.ActorOf(
+                Props.Create<RepoStatusActor>(updateStatus, updateStatusColor),
+                ActorNames.RepoStatus);
             busyStatusActor = App.UIActors.ActorOf(
                 Props.Create<BusyStatusUpdatorActor>(setIsBusy),
-                ActorNames.RepoValidateBusy);
+                ActorNames.RepoBusy);
             
-            Receive<ProcessRepo>(repo =>
+            Receive<ValidateRepo>(repo =>
             {
-                validateStatusActor.Tell(repo);
+                repoStatusActor.Tell(repo);
                 busyStatusActor.Tell(SystemBusy.Instance);
             });
             Receive<ValidRepo>(valid =>
             {
-                validateStatusActor.Tell(valid);
+                repoStatusActor.Tell(valid);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
             Receive<InvalidRepo>(invalid =>
             {
-                validateStatusActor.Tell(invalid);
+                repoStatusActor.Tell(invalid);
                 busyStatusActor.Tell(SystemIdle.Instance);
+            });
+            Receive<CanAcceptJob>(ask =>
+            {
+                repoStatusActor.Tell(ask);
+                busyStatusActor.Tell(SystemBusy.Instance);
             });
             Receive<UnableToAcceptJob>(job =>
             {
-                validateStatusActor.Tell(job);
+                repoStatusActor.Tell(job);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
             Receive<AbleToAcceptJob>(job =>
             {
-                validateStatusActor.Tell(job);
+                repoStatusActor.Tell(job);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
         }

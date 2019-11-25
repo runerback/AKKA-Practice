@@ -41,7 +41,7 @@ namespace GithubActors.Actors
 
         private void BecomeAuthenticating(object message)
         {
-            GetAuthStatusCoordinator()?.Tell(message);
+            GetAuthStatusCoordinator().Tell(message);
             Become(Authenticating);
         }
 
@@ -51,7 +51,7 @@ namespace GithubActors.Actors
             Receive<AuthenticationCancelled>(cancelled => BecomeUnauthenticated(cancelled));
             Receive<AuthenticationSuccess>(success =>
             {
-                GetAuthStatusCoordinator()?.Tell(success);
+                GetAuthStatusCoordinator().Tell(success);
 
                 var launcherActor = App.UIActors.ActorOf(
                     Props.Create<RepoLauncherActor>(),
@@ -62,7 +62,7 @@ namespace GithubActors.Actors
 
         private void BecomeUnauthenticated(object message)
         {
-            GetAuthStatusCoordinator()?.Tell(message);
+            GetAuthStatusCoordinator().Tell(message);
             Become(Unauthenticated);
         }
 

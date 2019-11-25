@@ -1,44 +1,47 @@
 ﻿using GithubActors.Messages;
 using System;
-using System.Windows.Media;
 
 namespace GithubActors.Actors
 {
-    sealed class RepoValidateStatusActor : TextStatusUpdatorActor
+    sealed class RepoStatusActor : TextStatusUpdatorActor
     {
-        public RepoValidateStatusActor(Action<string> updateStatus, Action<string> updateStatusColor) : 
+        public RepoStatusActor(Action<string> updateStatus, Action<string> updateStatusColor) : 
             base(updateStatus, updateStatusColor)
         {
-            Receive<ProcessRepo>(repo =>
+            Receive<ValidateRepo>(repo =>
             {
                 UpdateStatus($"Validating {repo.URL} . . .");
-                UpdateColor(Colors.DeepSkyBlue.ToString());
+                UpdateColor(StatusColors.Querying);
             });
             
             Receive<ValidRepo>(valid =>
             {
                 UpdateStatus("Valid!");
-                UpdateColor(Colors.Green.ToString());
+                UpdateColor(StatusColors.Succeed);
             });
 
             Receive<InvalidRepo>(invalid =>
             {
                 UpdateStatus(invalid.Reason);
-                UpdateColor(Colors.Red.ToString());
+                UpdateColor(StatusColors.Failed);
             });
 
-            //yes
+            Receive<CanAcceptJob>(ask =>
+            {
+                UpdateStatus($"Asking {ask} . . .");
+                UpdateColor(StatusColors.Querying);
+            });
+
             Receive<UnableToAcceptJob>(job =>
             {
                 UpdateStatus($"{job} is a valid repo, but system can't accept additional jobs");
-                UpdateColor(Colors.Red.ToString());
+                UpdateColor(StatusColors.Failed);
             });
-
-            //no
+            
             Receive<AbleToAcceptJob>(job =>
             {
                 UpdateStatus($"{job} is a valid repo - starting job!");
-                UpdateColor(Colors.Green.ToString());
+                UpdateColor(StatusColors.Succeed);
             });
         }
     }

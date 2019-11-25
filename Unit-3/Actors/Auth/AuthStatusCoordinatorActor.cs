@@ -1,7 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Messages;
 using System;
-using System.Windows.Media;
 
 namespace GithubActors.Actors
 {
@@ -22,32 +21,24 @@ namespace GithubActors.Actors
                 Props.Create<BusyStatusUpdatorActor>(setIsBusy),
                 ActorNames.AuthBusy);
 
-            Receive<Authenticate>(_ =>
+            Receive<Authenticate>(msg =>
             {
-                authStatusActor.Tell(new AuthenticateStatus(
-                    "Authenticating...",
-                    Colors.DeepSkyBlue));
+                authStatusActor.Tell(msg);
                 busyStatusActor.Tell(SystemBusy.Instance);
             });
-            Receive<AuthenticationFailed>(_ =>
+            Receive<AuthenticationFailed>(msg =>
             {
-                authStatusActor.Tell(new AuthenticateStatus(
-                    "Authentication failed. Please try again.",
-                    Colors.Red));
+                authStatusActor.Tell(msg);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
-            Receive<AuthenticationCancelled>(_ =>
+            Receive<AuthenticationCancelled>(msg =>
             {
-                authStatusActor.Tell(new AuthenticateStatus(
-                    "Authentication timed out. Please try again later.",
-                    Colors.Red));
+                authStatusActor.Tell(msg);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
-            Receive<AuthenticationSuccess>(_ =>
+            Receive<AuthenticationSuccess>(msg =>
             {
-                authStatusActor.Tell(new AuthenticateStatus(
-                    "Authentication succeed.",
-                    Colors.Green));
+                authStatusActor.Tell(msg);
                 busyStatusActor.Tell(SystemIdle.Instance);
             });
         }

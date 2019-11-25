@@ -23,25 +23,22 @@ namespace GithubActors.Actors
         {
             Receive<ProcessRepo>(repo =>
             {
-                Context.ActorSelection(ActorPaths.RepoValidator).Tell(new ValidateRepo(repo.URL));
-                GetRepoValidateStatusActor().Tell(repo);
-                BecomeBusy(repo.URL);
+                repoResultsPresenterActor.Tell(repo);
+                BecomeBusy(repo);
             });
 
-            //launch the window
+            //launch the repo results
             Receive<LaunchRepo>(repo =>
             {
                 repoResultsPresenterActor.Tell(repo);
-                Context.ActorSelection(ActorPaths.RepoResults).Tell(repo);
             });
         }
 
         /// <summary>
         /// Make any necessary URI updates, then switch our state to busy
         /// </summary>
-        private void BecomeBusy(string repoUrl)
+        private void BecomeBusy(ProcessRepo repo)
         {
-            Context.ActorSelection(ActorPaths.RepoValidateBusy).Tell(SystemBusy.Instance);
             Become(Busy);
         }
 
@@ -50,39 +47,13 @@ namespace GithubActors.Actors
         /// </summary>
         private void Busy()
         {
-            Receive<ValidRepo>(valid =>
-            {
-                GetRepoValidateStatusActor().Tell(valid);
-                BecomeReady();
-            });
-            Receive<InvalidRepo>(invalid =>
-            {
-                GetRepoValidateStatusActor().Tell(invalid);
-                BecomeReady();
-            });
-            Receive<UnableToAcceptJob>(job =>
-            {
-                GetRepoValidateStatusActor().Tell(job);
-                BecomeReady();
-            });
-            Receive<AbleToAcceptJob>(job =>
-            {
-                GetRepoValidateStatusActor().Tell(job);
-                BecomeReady();
-            });
-
-            Receive<LaunchRepo>(repo => ((IWithUnboundedStash)this).Stash.Stash());
+            Receive<ProcessRepo>(repo => ((IWithUnboundedStash)this).Stash.Stash());
         }
 
         private void BecomeReady()
         {
             ((IWithUnboundedStash)this).Stash.UnstashAll();
             Become(Ready);
-        }
-
-        private ActorSelection GetRepoValidateStatusActor()
-        {
-            return Context.ActorSelection(ActorPaths.RepoValidateStatus);
         }
 
         IStash IActorStash.Stash { get; set; }

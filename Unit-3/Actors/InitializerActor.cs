@@ -11,7 +11,7 @@ namespace GithubActors.Actors
             {
                 App.UIActors
                     .ActorSelection(ActorPaths.PageNavigator)
-                    ?.Tell(PageNavigate.Create<Views.GithubAuth, ViewModels.GithubAuth>("Sign in to GitHub"));
+                    .Tell(PageNavigate.Create<Views.GithubAuth, ViewModels.GithubAuth>("Sign in to GitHub"));
 
                 Become(Initialized);
             });

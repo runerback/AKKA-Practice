@@ -3,7 +3,6 @@ using GithubActors.Actors;
 using GithubActors.Messages;
 using System;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace GithubActors.ViewModels
 {
@@ -68,7 +67,7 @@ namespace GithubActors.ViewModels
             }
         }
 
-        private string authStatusColor = Colors.Transparent.ToString();
+        private string authStatusColor;
         public string AuthStatusColor
         {
             get { return authStatusColor; }
@@ -99,7 +98,7 @@ namespace GithubActors.ViewModels
         {
             App.GithubActors
                 .ActorSelection(ActorPaths.Auth)
-                ?.Tell(new Authenticate(authToken));
+                .Tell(new Authenticate(authToken));
         }
     }
 }

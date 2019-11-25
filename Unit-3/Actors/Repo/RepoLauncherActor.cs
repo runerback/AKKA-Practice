@@ -1,7 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Messages;
 using Octokit;
-using System;
 
 namespace GithubActors.Actors
 {
@@ -22,7 +21,7 @@ namespace GithubActors.Actors
             {
                 App.UIActors
                     .ActorSelection(ActorPaths.PageNavigator)
-                    ?.Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>("Who Starred This Repo?"));
+                    .Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>("Who Starred This Repo?", true));
 
                 repoValidatorActor = App.GithubActors.ActorOf(
                     Props.Create<GetHubRepoValidatorActor>(GithubClientFactory.GetClientFactory(auth.Token)),
@@ -41,36 +40,45 @@ namespace GithubActors.Actors
 
         private void Ready()
         {
-            //Outright invalid URLs
-            Receive<ValidateRepo>(
-                repo => string.IsNullOrEmpty(repo.URL) || !Uri.IsWellFormedUriString(repo.URL, UriKind.Absolute),
-                repo => Sender.Tell(new InvalidRepo(repo.URL, "Not a valid absolute URI")));
-
-            //Repos that at least have a valid absolute URL
             Receive<ValidateRepo>(repoAddress =>
             {
+                GetRepoStatusCoordinator().Tell(repoAddress);
                 repoValidatorActor.Tell(repoAddress);
             });
 
-            // something went wrong while querying github, sent to ourselves via PipeTo
-            // however - Sender gets preserved on the call, so it's safe to use Forward here.
-            Receive<InvalidRepo>(repo => Sender.Forward(repo));
+            // something went wrong while querying github
+            Receive<InvalidRepo>(repo => GetRepoStatusCoordinator().Tell(repo));
 
             // Octokit was able to retrieve this repository
             Receive<Repository>(repository =>
             {
+                GetRepoStatusCoordinator().Tell(new ValidRepo(repository.HtmlUrl));
+
                 //ask the GithubCommander if we can accept this job
-                Context.ActorSelection(ActorPaths.GithubCommander).Tell(
-                    new CanAcceptJob(repository.Name, repository.Owner.Login));
+                var canAccessJob = new CanAcceptJob(repository.Name, repository.Owner.Login);
+
+                Context.ActorSelection(ActorPaths.GithubCommander).Tell(canAccessJob);
+
+                GetRepoStatusCoordinator().Tell(canAccessJob);
             });
 
-            /* REPO is valid, but can we process it at this time? */
+            // REPO is valid, but there already has job running
+            Receive<UnableToAcceptJob>(job => GetRepoStatusCoordinator().Tell(job));
+            
+            Receive<AbleToAcceptJob>(job =>
+            {
+                GetRepoStatusCoordinator().Tell(job);
 
-            //yes
-            Receive<UnableToAcceptJob>(job => Context.ActorSelection(ActorPaths.MainForm).Tell(job));
+                var mainformActor = Context.ActorOf(
+                    Props.Create<MainFormActor>(),
+                    ActorNames.MainForm);
+                mainformActor.Tell(new ProcessRepo(job));
+            });
+        }
 
-            //no
-            Receive<AbleToAcceptJob>(job => Context.ActorSelection(ActorPaths.MainForm).Tell(job));
+        private ActorSelection GetRepoStatusCoordinator()
+        {
+            return Context.ActorSelection(ActorPaths.RepoStatusCoordinator);
         }
 
         IStash IActorStash.Stash { get; set; }

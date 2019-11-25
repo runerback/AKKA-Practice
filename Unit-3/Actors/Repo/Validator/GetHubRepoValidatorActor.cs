@@ -16,6 +16,11 @@ namespace GithubActors.Actors
             this.gitHubClientFactory = gitHubClientFactory ??
                 throw new ArgumentNullException(nameof(gitHubClientFactory));
 
+            //Outright invalid URLs
+            Receive<ValidateRepo>(
+                repo => string.IsNullOrEmpty(repo.URL) || !Uri.IsWellFormedUriString(repo.URL, UriKind.Absolute),
+                repo => Sender.Tell(new InvalidRepo(repo.URL, "Not a valid absolute URI")));
+
             //Repos that at least have a valid absolute URL
             Receive<ValidateRepo>(repoAddress =>
             {

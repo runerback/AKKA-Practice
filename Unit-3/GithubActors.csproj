@@ -74,14 +74,14 @@
     <Compile Include="Actors\Repo\RepoResultsCoordinatorActor.cs" />
     <Compile Include="Actors\Repo\RepoResultsPresenterActor.cs" />
     <Compile Include="Actors\Repo\RepoResultsStatusActor.cs" />
-    <Compile Include="Actors\Repo\RepoValidateStatusActor.cs" />
-    <Compile Include="Actors\Repo\RepoValidateStatusCoordinatorActor.cs" />
+    <Compile Include="Actors\Repo\RepoStatusActor.cs" />
+    <Compile Include="Actors\Repo\RepoStatusCoordinatorActor.cs" />
     <Compile Include="Actors\TextStatusUpdatorActor.cs" />
     <Compile Include="Controls\PageContainer.cs" />
+    <Compile Include="Controls\StatusColors.cs" />
     <Compile Include="GithubClientFactory.cs" />
     <Compile Include="Messages\AbleToAcceptJob.cs" />
     <Compile Include="Messages\Authenticate.cs" />
-    <Compile Include="Messages\AuthenticateStatus.cs" />
     <Compile Include="Messages\AuthenticationFailed.cs" />
     <Compile Include="Messages\AuthenticationSuccess.cs" />
     <Compile Include="Messages\BeginJob.cs" />
@@ -92,6 +92,7 @@
     <Compile Include="Messages\JobFailed.cs" />
     <Compile Include="Messages\LaunchRepo.cs" />
     <Compile Include="Messages\PageNavigate.cs" />
+    <Compile Include="Messages\PageNavigateBack.cs" />
     <Compile Include="Messages\PageTitle.cs" />
     <Compile Include="Messages\ProcessRepo.cs" />
     <Compile Include="Messages\PublishUpdate.cs" />

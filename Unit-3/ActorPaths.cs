@@ -27,9 +27,9 @@
         public static readonly string AuthBusy = $"akka://{ActorNames.UI}/user/{ActorNames.AuthBusy}";
 
         public static readonly string RepoLauncher = $"akka://{ActorNames.UI}/user/{ActorNames.RepoLauncher}";
-        public static readonly string RepoValidateCoordinator = $"akka://{ActorNames.UI}/user/{ActorNames.RepoValidateCoordinator}";
-        public static readonly string RepoValidateBusy = $"akka://{ActorNames.UI}/user/{ActorNames.RepoValidateBusy}";
-        public static readonly string RepoValidateStatus = $"akka://{ActorNames.UI}/user/{ActorNames.RepoValidateStatus}";
+        public static readonly string RepoStatusCoordinator = $"akka://{ActorNames.UI}/user/{ActorNames.RepoStatusCoordinator}";
+        public static readonly string RepoBusy = $"akka://{ActorNames.UI}/user/{ActorNames.RepoBusy}";
+        public static readonly string RepoStatus = $"akka://{ActorNames.UI}/user/{ActorNames.RepoStatus}";
         public static readonly string RepoCoordinator = $"akka://{ActorNames.UI}/user/{ActorNames.RepoCoordinator}";
         public static readonly string RepoProgress = $"akka://{ActorNames.UI}/user/{ActorNames.RepoProgress}";
 

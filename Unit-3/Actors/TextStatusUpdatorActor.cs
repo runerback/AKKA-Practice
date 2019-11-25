@@ -14,6 +14,8 @@ namespace GithubActors.Actors
                 throw new ArgumentNullException(nameof(updateStatus));
             this.updateStatusColor = updateStatusColor ??
                 throw new ArgumentNullException(nameof(updateStatusColor));
+
+            UpdateColor(StatusColors.Idle);
         }
 
         protected void UpdateStatus(string status)

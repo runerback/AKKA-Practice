@@ -16,9 +16,9 @@
         public const string AuthStatus = "auth_status";
         public const string AuthBusy = "auth_busy";
         public const string RepoLauncher = "repo_launcher";
-        public const string RepoValidateCoordinator = "repo_vali_status_coor";
-        public const string RepoValidateBusy = "repo_vali_busy";
-        public const string RepoValidateStatus = "repo_vali_status";
+        public const string RepoStatusCoordinator = "repo_status_coor";
+        public const string RepoBusy = "repo_busy";
+        public const string RepoStatus = "repo_status";
         public const string RepoCoordinator = "repo_result_coor";
         public const string MainForm = "repo_mainform";
         public const string RepoProgress = "repo_progress";

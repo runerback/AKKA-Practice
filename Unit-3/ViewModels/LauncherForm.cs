@@ -1,8 +1,8 @@
 ﻿using Akka.Actor;
 using GithubActors.Actors;
+using GithubActors.Messages;
 using System;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace GithubActors.ViewModels
 {
@@ -29,8 +29,8 @@ namespace GithubActors.ViewModels
                 launchCommand.NotifyCanExecuteChanged();
             };
             App.UIActors.ActorOf(
-                Props.Create<RepoValidateStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsValidating),
-                ActorNames.RepoValidateCoordinator);
+                Props.Create<RepoStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsValidating),
+                ActorNames.RepoStatusCoordinator);
         }
 
         private string repoUrl;
@@ -61,7 +61,7 @@ namespace GithubActors.ViewModels
             }
         }
 
-        private string repoUrlValidateStatusColor = Colors.Transparent.ToString();
+        private string repoUrlValidateStatusColor;
         public string RepoURLValidateStatusColor
         {
             get { return repoUrlValidateStatusColor; }
@@ -82,7 +82,7 @@ namespace GithubActors.ViewModels
 
         private void Launch(object obj)
         {
-            throw new NotImplementedException();
+            App.UIActors.ActorSelection(ActorPaths.RepoLauncher).Tell(new ValidateRepo(repoUrl));
         }
     }
 }
