@@ -1,0 +1,9 @@
+﻿<Window x:Class="GithubActors.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:GithubActors.Controls"
+        x:ClassModifier="internal"
+        Height="450" Width="800"
+        Title="{Binding Title}">
+    <controls:PageContainer />
+</Window>

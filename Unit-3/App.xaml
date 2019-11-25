@@ -1,0 +1,47 @@
+﻿<Application x:Class="GithubActors.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:GithubActors.Controls"
+             x:ClassModifier="internal"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Style TargetType="UserControl">
+                <Setter Property="Background" Value="WhiteSmoke" />
+            </Style>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="FontSize" Value="20" />
+            </Style>
+
+            <Style TargetType="TextBox">
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="White" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <Style TargetType="controls:PageContainer">
+                <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="controls:PageContainer">
+                            <ContentControl 
+                                Margin="{TemplateBinding Margin}"
+                                Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                Content="{Binding Page.View, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" 
+                                />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

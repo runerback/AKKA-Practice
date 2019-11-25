@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D3618E4D-AB74-4067-A289-8F5A566E54EF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>GithubActors</RootNamespace>
+    <AssemblyName>GithubActors</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="ActorNames.cs" />
+    <Compile Include="ActorPaths.cs" />
+    <Compile Include="Actors\BusyStatusUpdatorActor.cs" />
+    <Compile Include="Actors\GithubAuthenticationActor.cs" />
+    <Compile Include="Actors\AuthStatusActor.cs" />
+    <Compile Include="Actors\AuthStatusCoordinatorActor.cs" />
+    <Compile Include="Actors\InitializerActor.cs" />
+    <Compile Include="Actors\PageNavigatorActor.cs" />
+    <Compile Include="Actors\PageTitleActor.cs" />
+    <Compile Include="Controls\PageContainer.cs" />
+    <Compile Include="GithubClientFactory.cs" />
+    <Compile Include="Messages\Authenticate.cs" />
+    <Compile Include="Messages\AuthenticateStatus.cs" />
+    <Compile Include="Messages\AuthenticationFailed.cs" />
+    <Compile Include="Messages\AuthenticationSuccess.cs" />
+    <Compile Include="Messages\Initialize.cs" />
+    <Compile Include="Messages\PageNavigate.cs" />
+    <Compile Include="Messages\PageTitle.cs" />
+    <Compile Include="Messages\SystemBusy.cs" />
+    <Compile Include="Messages\SystemIdle.cs" />
+    <Compile Include="MVVM\DelegateCommand.cs" />
+    <Compile Include="MVVM\Page.cs" />
+    <Compile Include="MVVM\ViewModelBase.cs" />
+    <Compile Include="MVVM\SimpleCommand.cs" />
+    <Compile Include="Messages\AuthenticationCancelled.cs" />
+    <Compile Include="ViewModels\GithubAuth.cs" />
+    <Compile Include="ViewModels\LauncherForm.cs" />
+    <Compile Include="ViewModels\MainWindow.cs" />
+    <Compile Include="Views\GithubAuth.xaml.cs">
+      <DependentUpon>GithubAuth.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LauncherForm.xaml.cs">
+      <DependentUpon>LauncherForm.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\GithubAuth.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LauncherForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Akka">
+      <Version>1.3.16</Version>
+    </PackageReference>
+    <PackageReference Include="Octokit">
+      <Version>0.36.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
