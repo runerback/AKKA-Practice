@@ -6,6 +6,8 @@
         public const string Auth = "authenticator";
         public const string RepoValidator = "repo_validator";
         public const string AuthStatusCooridnator = "auth_status_coor";
+        public const string GithubCommander = "commander";
+        public const string GithubCoordinator = "github_coor";
 
         public const string UI = "UIActors";
         public const string Initializer = "initializer";
@@ -18,6 +20,7 @@
         public const string RepoValidateBusy = "repo_vali_busy";
         public const string RepoValidateStatus = "repo_vali_status";
         public const string RepoCoordinator = "repo_result_coor";
+        public const string MainForm = "repo_mainform";
         public const string RepoProgress = "repo_progress";
         public const string RepoResults = "repo_results";
         public const string RepoResultsPresenter = "repo_presenter";

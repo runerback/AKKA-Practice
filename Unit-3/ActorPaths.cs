@@ -10,6 +10,8 @@
 
         public static readonly string Auth = $"akka://{ActorNames.Github}/user/{ActorNames.Auth}";
         public static readonly string RepoValidator = $"akka://{ActorNames.Github}/user/{ActorNames.RepoValidator}";
+        public static readonly string GithubCommander = $"akka://{ActorNames.Github}/user/{ActorNames.GithubCommander}";
+        public static readonly string GithubCoordinator = $"akka://{ActorNames.Github}/user/{ActorNames.GithubCoordinator}";
 
         #endregion Github
 
@@ -30,6 +32,8 @@
         public static readonly string RepoValidateStatus = $"akka://{ActorNames.UI}/user/{ActorNames.RepoValidateStatus}";
         public static readonly string RepoCoordinator = $"akka://{ActorNames.UI}/user/{ActorNames.RepoCoordinator}";
         public static readonly string RepoProgress = $"akka://{ActorNames.UI}/user/{ActorNames.RepoProgress}";
+
+        public static readonly string MainForm = $"akka://{ActorNames.UI}/user/{ActorNames.MainForm}";
 
         public static readonly string RepoResultsPresenter = $"akka://{ActorNames.UI}/user/{ActorNames.RepoResultsPresenter}";
         public static readonly string RepoResults = $"akka://{ActorNames.UI}/user/{ActorNames.RepoResults}";

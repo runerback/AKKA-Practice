@@ -30,7 +30,7 @@ namespace GithubActors.ViewModels
             };
             App.UIActors.ActorOf(
                 Props.Create<RepoValidateStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsValidating),
-                ActorNames.RepoValidateBusy);
+                ActorNames.RepoValidateCoordinator);
         }
 
         private string repoUrl;

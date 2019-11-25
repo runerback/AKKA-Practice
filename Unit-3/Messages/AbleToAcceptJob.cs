@@ -5,5 +5,9 @@
         public AbleToAcceptJob(string repoName, string owner) : base(repoName, owner)
         {
         }
+
+        public AbleToAcceptJob(RepoKey other) : base(other)
+        {
+        }
     }
 }

@@ -5,5 +5,9 @@
         public JobFailed(string repoName, string owner) : base(repoName, owner)
         {
         }
+
+        public JobFailed(RepoKey other) : base(other)
+        {
+        }
     }
 }
