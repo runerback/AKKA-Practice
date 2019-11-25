@@ -14,6 +14,14 @@ namespace GithubActors.ViewModels
         {
             launchCommand = new DelegateCommand(Launch, CanLaunch);
 
+            Action<string> updateStatus = status =>
+            {
+                RepoURLValidateStatus = status;
+            };
+            Action<string> updateStatusColor = color =>
+            {
+                RepoURLValidateStatusColor = color;
+            };
             Action<bool> setIsValidating = validating =>
             {
                 RepoURLEnabled = !validating;
@@ -21,7 +29,7 @@ namespace GithubActors.ViewModels
                 launchCommand.NotifyCanExecuteChanged();
             };
             App.UIActors.ActorOf(
-                Props.Create<BusyStatusUpdatorActor>(setIsValidating),
+                Props.Create<RepoValidateStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsValidating),
                 ActorNames.RepoValidateBusy);
         }
 
@@ -46,7 +54,7 @@ namespace GithubActors.ViewModels
         public string RepoURLValidateStatus
         {
             get { return repoUrlValidateStatus; }
-            set
+            private set
             {
                 repoUrlValidateStatus = value;
                 NotifyPropertyChanged(nameof(RepoURLValidateStatus));
@@ -74,7 +82,7 @@ namespace GithubActors.ViewModels
 
         private void Launch(object obj)
         {
-
+            throw new NotImplementedException();
         }
     }
 }

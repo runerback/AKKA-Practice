@@ -58,23 +58,48 @@
     <Compile Include="ActorNames.cs" />
     <Compile Include="ActorPaths.cs" />
     <Compile Include="Actors\BusyStatusUpdatorActor.cs" />
+    <Compile Include="Actors\GetHubRepoValidatorActor.cs" />
     <Compile Include="Actors\GithubAuthenticationActor.cs" />
     <Compile Include="Actors\AuthStatusActor.cs" />
     <Compile Include="Actors\AuthStatusCoordinatorActor.cs" />
     <Compile Include="Actors\InitializerActor.cs" />
+    <Compile Include="Actors\MainFormActor.cs" />
     <Compile Include="Actors\PageNavigatorActor.cs" />
     <Compile Include="Actors\PageTitleActor.cs" />
+    <Compile Include="Actors\RepoLauncherActor.cs" />
+    <Compile Include="Actors\RepoResultsActor.cs" />
+    <Compile Include="Actors\RepoResultsCoordinatorActor.cs" />
+    <Compile Include="Actors\RepoResultsPresenterActor.cs" />
+    <Compile Include="Actors\RepoResultsStatusActor.cs" />
+    <Compile Include="Actors\RepoValidateStatusActor.cs" />
+    <Compile Include="Actors\RepoValidateStatusCoordinatorActor.cs" />
+    <Compile Include="Actors\TextStatusUpdatorActor.cs" />
     <Compile Include="Controls\PageContainer.cs" />
     <Compile Include="GithubClientFactory.cs" />
+    <Compile Include="Messages\AbleToAcceptJob.cs" />
     <Compile Include="Messages\Authenticate.cs" />
     <Compile Include="Messages\AuthenticateStatus.cs" />
     <Compile Include="Messages\AuthenticationFailed.cs" />
     <Compile Include="Messages\AuthenticationSuccess.cs" />
+    <Compile Include="Messages\GithubProgressStats.cs" />
     <Compile Include="Messages\Initialize.cs" />
+    <Compile Include="Messages\InvalidRepo.cs" />
+    <Compile Include="Messages\JobFailed.cs" />
+    <Compile Include="Messages\LaunchRepo.cs" />
     <Compile Include="Messages\PageNavigate.cs" />
     <Compile Include="Messages\PageTitle.cs" />
+    <Compile Include="Messages\ProcessRepo.cs" />
+    <Compile Include="Messages\RepoAddress.cs" />
+    <Compile Include="Messages\RepoBaseInfo.cs" />
+    <Compile Include="Messages\SimilarRepo.cs" />
     <Compile Include="Messages\SystemBusy.cs" />
     <Compile Include="Messages\SystemIdle.cs" />
+    <Compile Include="Messages\UnableToAcceptJob.cs" />
+    <Compile Include="Messages\ValidateRepo.cs" />
+    <Compile Include="Messages\ValidRepo.cs" />
+    <Compile Include="Model\Repo.cs" />
+    <Compile Include="Model\RepoRequestProgress.cs" />
+    <Compile Include="Model\RepoRequestStatus.cs" />
     <Compile Include="MVVM\DelegateCommand.cs" />
     <Compile Include="MVVM\Page.cs" />
     <Compile Include="MVVM\ViewModelBase.cs" />
@@ -83,11 +108,15 @@
     <Compile Include="ViewModels\GithubAuth.cs" />
     <Compile Include="ViewModels\LauncherForm.cs" />
     <Compile Include="ViewModels\MainWindow.cs" />
+    <Compile Include="ViewModels\RepoResultsForm.cs" />
     <Compile Include="Views\GithubAuth.xaml.cs">
       <DependentUpon>GithubAuth.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LauncherForm.xaml.cs">
       <DependentUpon>LauncherForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RepoResultsForm.xaml.cs">
+      <DependentUpon>RepoResultsForm.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -106,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LauncherForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RepoResultsForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

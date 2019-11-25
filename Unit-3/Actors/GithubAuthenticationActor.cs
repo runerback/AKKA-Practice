@@ -5,14 +5,8 @@ namespace GithubActors.Actors
 {
     sealed class GithubAuthenticationActor : ReceiveActor
     {
-        private readonly IActorRef authStatusPresentActor;
-
         public GithubAuthenticationActor()
         {
-            authStatusPresentActor = Context.ActorOf(
-                Props.Create<AuthStatusCoordinatorActor>(),
-                ActorNames.AuthStatusPresent);
-
             Unauthenticated();
         }
 
@@ -39,7 +33,7 @@ namespace GithubActors.Actors
                             return new AuthenticationFailed();
                         if (tr.IsCanceled)
                             return new AuthenticationCancelled();
-                        return new AuthenticationSuccess();
+                        return new AuthenticationSuccess(auth.OAuthToken);
                     })
                     .PipeTo(Self);
             });
@@ -47,7 +41,7 @@ namespace GithubActors.Actors
 
         private void BecomeAuthenticating(object message)
         {
-            authStatusPresentActor.Tell(message);
+            GetAuthStatusCoordinator()?.Tell(message);
             Become(Authenticating);
         }
 
@@ -57,18 +51,24 @@ namespace GithubActors.Actors
             Receive<AuthenticationCancelled>(cancelled => BecomeUnauthenticated(cancelled));
             Receive<AuthenticationSuccess>(success =>
             {
-                authStatusPresentActor.Tell(success);
+                GetAuthStatusCoordinator()?.Tell(success);
 
-                App.UIActors
-                    .ActorSelection(ActorPaths.PageNavigator)
-                    ?.Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>("Who Starred This Repo?"));
+                var launcherActor = App.UIActors.ActorOf(
+                    Props.Create<RepoLauncherActor>(),
+                    ActorNames.RepoLauncher);
+                launcherActor.Tell(success);
             });
         }
 
         private void BecomeUnauthenticated(object message)
         {
-            authStatusPresentActor.Tell(message);
+            GetAuthStatusCoordinator()?.Tell(message);
             Become(Unauthenticated);
+        }
+
+        private ActorSelection GetAuthStatusCoordinator()
+        {
+            return App.UIActors.ActorSelection(ActorPaths.AuthStatusCooridnator);
         }
     }
 }

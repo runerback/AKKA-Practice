@@ -1,51 +1,55 @@
 ﻿using Akka.Actor;
 using GithubActors.Messages;
+using System;
 using System.Windows.Media;
 
 namespace GithubActors.Actors
 {
     sealed class AuthStatusCoordinatorActor : ReceiveActor
     {
-        public AuthStatusCoordinatorActor()
+        private readonly IActorRef authStatusActor;
+        private readonly IActorRef busyStatusActor;
+
+        public AuthStatusCoordinatorActor(
+            Action<string> updateStatus, 
+            Action<string> updateStatusColor,
+            Action<bool> setIsBusy)
         {
+            authStatusActor = Context.ActorOf(
+                Props.Create<AuthStatusActor>(updateStatus, updateStatusColor),
+                ActorNames.AuthStatus);
+            busyStatusActor = Context.ActorOf(
+                Props.Create<BusyStatusUpdatorActor>(setIsBusy),
+                ActorNames.AuthBusy);
+
             Receive<Authenticate>(_ =>
             {
-                GetStatusActor()?.Tell(new AuthenticateStatus(
+                authStatusActor.Tell(new AuthenticateStatus(
                     "Authenticating...",
                     Colors.DeepSkyBlue));
-                GetAuthCommandActor()?.Tell(SystemBusy.Instance);
+                busyStatusActor.Tell(SystemBusy.Instance);
             });
             Receive<AuthenticationFailed>(_ =>
             {
-                GetStatusActor()?.Tell(new AuthenticateStatus(
+                authStatusActor.Tell(new AuthenticateStatus(
                     "Authentication failed. Please try again.",
                     Colors.Red));
-                GetAuthCommandActor()?.Tell(SystemIdle.Instance);
+                busyStatusActor.Tell(SystemIdle.Instance);
             });
             Receive<AuthenticationCancelled>(_ =>
             {
-                GetStatusActor()?.Tell(new AuthenticateStatus(
+                authStatusActor.Tell(new AuthenticateStatus(
                     "Authentication timed out. Please try again later.",
                     Colors.Red));
-                GetAuthCommandActor()?.Tell(SystemIdle.Instance);
+                busyStatusActor.Tell(SystemIdle.Instance);
             });
             Receive<AuthenticationSuccess>(_ =>
             {
-                GetStatusActor()?.Tell(new AuthenticateStatus(
+                authStatusActor.Tell(new AuthenticateStatus(
                     "Authentication succeed.",
                     Colors.Green));
-                GetAuthCommandActor()?.Tell(SystemIdle.Instance);
+                busyStatusActor.Tell(SystemIdle.Instance);
             });
-        }
-
-        private ActorSelection GetStatusActor()
-        {
-            return App.UIActors.ActorSelection(ActorPaths.AuthStatus);
-        }
-
-        private ActorSelection GetAuthCommandActor()
-        {
-            return App.UIActors.ActorSelection(ActorPaths.AuthBusy);
         }
     }
 }

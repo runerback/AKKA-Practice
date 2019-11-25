@@ -1,24 +1,17 @@
-﻿using Akka.Actor;
-using GithubActors.Messages;
+﻿using GithubActors.Messages;
 using System;
-using System.Windows.Media;
 
 namespace GithubActors.Actors
 {
-    sealed class AuthStatusActor : ReceiveActor
+    sealed class AuthStatusActor : TextStatusUpdatorActor
     {
-        private readonly Action<string> updateStatus;
-        private readonly Action<Color> updateStatusColor;
-
-        public AuthStatusActor(Action<string> updateStatus, Action<Color> updateStatusColor)
+        public AuthStatusActor(Action<string> updateStatus, Action<string> updateStatusColor) : 
+            base(updateStatus, updateStatusColor)
         {
-            this.updateStatus = updateStatus;
-            this.updateStatusColor = updateStatusColor;
-
             Receive<AuthenticateStatus>(value =>
            {
-               this.updateStatus(value.Status);
-               this.updateStatusColor(value.Color);
+               UpdateStatus(value.Status);
+               UpdateColor(value.Color.ToString());
            });
         }
     }

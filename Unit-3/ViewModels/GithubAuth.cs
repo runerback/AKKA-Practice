@@ -16,21 +16,23 @@ namespace GithubActors.ViewModels
             authenticateCommand = new DelegateCommand(Authenticate, CanAuthenticate);
             helpLinkCommand = new SimpleCommand(HelpLink);
 
-            Action<string> updateStatus = status => AuthStatus = status;
-            Action<Color> updateStatusColor = color => AuthStatusColor = color.ToString();
-            App.UIActors.ActorOf(
-                Props.Create<AuthStatusActor>(updateStatus, updateStatusColor),
-                ActorNames.AuthStatus);
+            InitializeActors();
+        }
 
+        private void InitializeActors()
+        {
+            Action<string> updateStatus = status => AuthStatus = status;
+            Action<string> updateStatusColor = color => AuthStatusColor = color;
             Action<bool> setIsAuthenticating = authenticating =>
             {
                 AuthTokenEnabled = !authenticating;
                 this.authenticating = authenticating;
                 authenticateCommand.NotifyCanExecuteChanged();
             };
+            
             App.UIActors.ActorOf(
-                Props.Create<BusyStatusUpdatorActor>(setIsAuthenticating),
-                ActorNames.AuthBusy);
+                Props.Create<AuthStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsAuthenticating),
+                ActorNames.AuthStatusCooridnator);
         }
 
         private string authToken;
