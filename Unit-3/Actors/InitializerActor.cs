@@ -10,7 +10,7 @@ namespace GithubActors.Actors
             Receive<Initialize>(_ =>
             {
                 App.UIActors
-                    .ActorSelection(ActorPaths.PageNavigator)
+                    .ActorSelection(ActorPaths.DispatcherCoordinator)
                     .Tell(PageNavigate.Create<Views.GithubAuth, ViewModels.GithubAuth>("Sign in to GitHub"));
 
                 Become(Initialized);

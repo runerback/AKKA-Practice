@@ -10,8 +10,12 @@
         public const string GithubCoordinator = "github_coor";
 
         public const string UI = "UIActors";
-        public const string Initializer = "initializer";
+
+        public const string DispatcherCoordinator = "dispatcher_coor";
         public const string PageNavigator = "page_navigator";
+        public const string DispatcherCommandNotifier = "dispatcher_command_notifier";
+
+        public const string Initializer = "initializer";
         public const string PageTitle = "page_title";
         public const string AuthStatus = "auth_status";
         public const string AuthBusy = "auth_busy";

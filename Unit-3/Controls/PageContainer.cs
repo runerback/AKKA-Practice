@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Actors;
+using GithubActors.Messages;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,9 +14,11 @@ namespace GithubActors.Controls
         public PageContainer()
         {
             Action<Page> navigateToPage = SetPage;
-            navigatorActor = App.UIActors.ActorOf(
-                Props.Create<PageNavigatorActor>(navigateToPage),
-                ActorNames.PageNavigator);
+
+            App.UIActors
+                .ActorSelection(ActorPaths.DispatcherCoordinator)
+                .Tell(CreateDispatcherActor.Build<PageNavigatorActor>(
+                    ActorNames.PageNavigator, navigateToPage));
         }
         
         public Page Page

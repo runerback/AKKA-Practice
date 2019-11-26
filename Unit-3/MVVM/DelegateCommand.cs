@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace GithubActors
 {
-    sealed class DelegateCommand : ICommand
+    sealed class DelegateCommand : IDispatcherCommand
     {
         private readonly Action<object> action;
         private readonly Predicate<object> predicate;
@@ -24,7 +24,7 @@ namespace GithubActors
             action.Invoke(parameter);
         }
 
-        public void NotifyCanExecuteChanged()
+        void IDispatcherCommand.NotifyCanExecuteChanged()
         {
             canExecuteChanged?.Invoke(this, EventArgs.Empty);
         }

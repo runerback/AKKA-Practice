@@ -23,7 +23,7 @@ namespace GithubActors.Messages
         /// <typeparam name="TContext">corresponding view model</typeparam>
         /// <param name="title">window title</param>
         /// <param name="stash">whether stash this page for navigating back.</param>
-        public static PageNavigate Create<TView, TContext>(string title, bool stash = false)
+        public static PageNavigate Create<TView, TContext>(string title = null, bool stash = false)
             where TView : FrameworkElement, new()
             where TContext : class, INotifyPropertyChanged, new()
         {

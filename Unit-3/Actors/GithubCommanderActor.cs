@@ -37,9 +37,6 @@ namespace GithubActors.Actors
 
                 //start processing messages
                 githubCoordinator.Tell(new BeginJob(job));
-
-                //launch the new window to view results of the processing
-                Context.ActorSelection(ActorPaths.MainForm).Tell(new LaunchRepo(job, Sender));
             });
         }
 

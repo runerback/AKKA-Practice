@@ -20,8 +20,9 @@ namespace GithubActors.Actors
             Receive<AuthenticationSuccess>(auth =>
             {
                 App.UIActors
-                    .ActorSelection(ActorPaths.PageNavigator)
-                    .Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>("Who Starred This Repo?", true));
+                    .ActorSelection(ActorPaths.DispatcherCoordinator)
+                    .Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>(
+                        "Who Starred This Repo?", true));
 
                 repoValidatorActor = App.GithubActors.ActorOf(
                     Props.Create<GetHubRepoValidatorActor>(GithubClientFactory.GetClientFactory(auth.Token)),

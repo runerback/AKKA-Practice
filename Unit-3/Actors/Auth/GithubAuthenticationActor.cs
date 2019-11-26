@@ -54,7 +54,8 @@ namespace GithubActors.Actors
                 GetAuthStatusCoordinator().Tell(success);
 
                 var launcherActor = App.UIActors.ActorOf(
-                    Props.Create<RepoLauncherActor>(),
+                    Props.Create<RepoLauncherActor>()
+                        .WithDispatcher("akka.actor.synchronized-dispatcher"),
                     ActorNames.RepoLauncher);
                 launcherActor.Tell(success);
             });

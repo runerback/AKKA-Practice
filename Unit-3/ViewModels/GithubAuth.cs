@@ -26,7 +26,9 @@ namespace GithubActors.ViewModels
             {
                 AuthTokenEnabled = !authenticating;
                 this.authenticating = authenticating;
-                authenticateCommand.NotifyCanExecuteChanged();
+
+                App.UIActors.ActorSelection(ActorPaths.DispatcherCoordinator).Tell(
+                    new NotifyDispatcherCommandCanExecuteChanged(authenticateCommand));
             };
             
             App.UIActors.ActorOf(

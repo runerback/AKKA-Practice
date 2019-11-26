@@ -17,9 +17,12 @@
 
         #region UI
 
+        public static readonly string DispatcherCoordinator = $"akka://{ActorNames.UI}/user/{ActorNames.DispatcherCoordinator}";
+        public static readonly string PageNavigator = $"akka://{ActorNames.UI}/user/{ActorNames.DispatcherCoordinator}/{ActorNames.PageNavigator}";
+        public static readonly string DispatcherCommandNotifier = $"akka://{ActorNames.UI}/user/{ActorNames.DispatcherCoordinator}/{ActorNames.DispatcherCommandNotifier}";
+
         public static readonly string Initializer = $"akka://{ActorNames.UI}/user/{ActorNames.Initializer}";
         
-        public static readonly string PageNavigator = $"akka://{ActorNames.UI}/user/{ActorNames.PageNavigator}";
         public static readonly string PageTitle = $"akka://{ActorNames.UI}/user/{ActorNames.PageTitle}";
 
         public static readonly string AuthStatusCooridnator = $"akka://{ActorNames.UI}/user/{ActorNames.AuthStatusCooridnator}";

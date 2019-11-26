@@ -58,6 +58,8 @@
     <Compile Include="ActorNames.cs" />
     <Compile Include="ActorPaths.cs" />
     <Compile Include="Actors\BusyStatusUpdatorActor.cs" />
+    <Compile Include="Actors\Dispatcher\DispatcherCommandNotifierActor.cs" />
+    <Compile Include="Actors\Dispatcher\DispatcherCoordinatorActor.cs" />
     <Compile Include="Actors\GithubCommanderActor.cs" />
     <Compile Include="Actors\GithubCoordinatorActor.cs" />
     <Compile Include="Actors\GithubWorkerActor.cs" />
@@ -67,7 +69,7 @@
     <Compile Include="Actors\Auth\AuthStatusCoordinatorActor.cs" />
     <Compile Include="Actors\InitializerActor.cs" />
     <Compile Include="Actors\MainFormActor.cs" />
-    <Compile Include="Actors\PageNavigatorActor.cs" />
+    <Compile Include="Actors\Dispatcher\PageNavigatorActor.cs" />
     <Compile Include="Actors\PageTitleActor.cs" />
     <Compile Include="Actors\Repo\RepoLauncherActor.cs" />
     <Compile Include="Actors\Repo\RepoResultsActor.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Actors\TextStatusUpdatorActor.cs" />
     <Compile Include="Controls\PageContainer.cs" />
     <Compile Include="Controls\StatusColors.cs" />
+    <Compile Include="Definitions\IDispatcherCommand.cs" />
     <Compile Include="GithubClientFactory.cs" />
     <Compile Include="Messages\AbleToAcceptJob.cs" />
     <Compile Include="Messages\Authenticate.cs" />
@@ -86,11 +89,12 @@
     <Compile Include="Messages\AuthenticationSuccess.cs" />
     <Compile Include="Messages\BeginJob.cs" />
     <Compile Include="Messages\CanAcceptJob.cs" />
+    <Compile Include="Messages\Dispatcher\CreateDispatcherActor.cs" />
+    <Compile Include="Messages\Dispatcher\NotifyDispatcherCommandCanExecuteChanged.cs" />
     <Compile Include="Messages\GithubProgressStats.cs" />
     <Compile Include="Messages\Initialize.cs" />
     <Compile Include="Messages\InvalidRepo.cs" />
     <Compile Include="Messages\JobFailed.cs" />
-    <Compile Include="Messages\LaunchRepo.cs" />
     <Compile Include="Messages\PageNavigate.cs" />
     <Compile Include="Messages\PageNavigateBack.cs" />
     <Compile Include="Messages\PageTitle.cs" />

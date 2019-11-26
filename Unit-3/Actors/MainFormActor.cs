@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Messages;
+using System.Collections.Generic;
 
 namespace GithubActors.Actors
 {
@@ -23,14 +24,7 @@ namespace GithubActors.Actors
         {
             Receive<ProcessRepo>(repo =>
             {
-                repoResultsPresenterActor.Tell(repo);
                 BecomeBusy(repo);
-            });
-
-            //launch the repo results
-            Receive<LaunchRepo>(repo =>
-            {
-                repoResultsPresenterActor.Tell(repo);
             });
         }
 
@@ -39,7 +33,9 @@ namespace GithubActors.Actors
         /// </summary>
         private void BecomeBusy(ProcessRepo repo)
         {
+            repoResultsPresenterActor.Tell(repo);
             Become(Busy);
+            Context.ActorSelection(ActorPaths.GithubCoordinator).Tell(new SubscribeToProgressUpdates(Self));
         }
 
         /// <summary>
@@ -47,6 +43,21 @@ namespace GithubActors.Actors
         /// </summary>
         private void Busy()
         {
+            Receive<GithubProgressStats>(stats =>
+            {
+                repoResultsPresenterActor.Tell(stats);
+            });
+
+            Receive<IEnumerable<SimilarRepo>>(repos =>
+            {
+                repoResultsPresenterActor.Tell(repos);
+            });
+
+            Receive<JobFailed>(failed =>
+            {
+                repoResultsPresenterActor.Tell(failed);
+            });
+
             Receive<ProcessRepo>(repo => ((IWithUnboundedStash)this).Stash.Stash());
         }
 

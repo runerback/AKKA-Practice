@@ -26,7 +26,9 @@ namespace GithubActors.ViewModels
             {
                 RepoURLEnabled = !validating;
                 isValidating = validating;
-                launchCommand.NotifyCanExecuteChanged();
+
+                App.UIActors.ActorSelection(ActorPaths.DispatcherCoordinator).Tell(
+                    new NotifyDispatcherCommandCanExecuteChanged(launchCommand));
             };
             App.UIActors.ActorOf(
                 Props.Create<RepoStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsValidating),
@@ -82,7 +84,9 @@ namespace GithubActors.ViewModels
 
         private void Launch(object obj)
         {
-            App.UIActors.ActorSelection(ActorPaths.RepoLauncher).Tell(new ValidateRepo(repoUrl));
+            App.UIActors
+                .ActorSelection(ActorPaths.RepoLauncher)
+                .Tell(new ValidateRepo(repoUrl ?? "https://github.com/runerback/AKKA-Practice"));
         }
     }
 }

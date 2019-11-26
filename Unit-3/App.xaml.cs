@@ -20,16 +20,25 @@ namespace GithubActors
         
         public App()
         {
-            GithubActors.ActorOf(
-                   Props.Create<GithubAuthenticationActor>(),
-                   ActorNames.Auth);
-
             Exit += OnExiting;
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            UIActors.ActorOf(Props.Create<InitializerActor>(), ActorNames.Initializer)
+            GithubActors.ActorOf(
+                   Props.Create<GithubAuthenticationActor>()
+                        .WithDispatcher("akka.actor.synchronized-dispatcher"),
+                   ActorNames.Auth);
+
+            UIActors.ActorOf(
+                Props.Create<DispatcherCoordinatorActor>(),
+                ActorNames.DispatcherCoordinator);
+
+            UIActors.ActorOf(
+                Props.Create<InitializerActor>()
+                    .WithDispatcher("akka.actor.synchronized-dispatcher"), 
+                ActorNames.Initializer
+                )
                 .Tell(new Initialize());
         }
         
