@@ -30,7 +30,7 @@ namespace GithubActors.ViewModels
                 App.UIActors.ActorSelection(ActorPaths.DispatcherCoordinator).Tell(
                     new NotifyDispatcherCommandCanExecuteChanged(authenticateCommand));
             };
-            
+
             App.UIActors.ActorOf(
                 Props.Create<AuthStatusCoordinatorActor>(updateStatus, updateStatusColor, setIsAuthenticating),
                 ActorNames.AuthStatusCooridnator);
@@ -79,7 +79,7 @@ namespace GithubActors.ViewModels
                 NotifyPropertyChanged(nameof(AuthStatusColor));
             }
         }
-        
+
         private readonly SimpleCommand helpLinkCommand;
         public ICommand HelpLinkCommand => helpLinkCommand;
 
@@ -100,7 +100,7 @@ namespace GithubActors.ViewModels
         {
             App.GithubActors
                 .ActorSelection(ActorPaths.Auth)
-                .Tell(new Authenticate(authToken));
+                .Tell(new Authenticate(authToken ?? new AuthTokenStore().Token));
         }
     }
 }

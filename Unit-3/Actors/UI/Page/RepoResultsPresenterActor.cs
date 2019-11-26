@@ -10,6 +10,8 @@ namespace GithubActors.Actors
 
         public RepoResultsPresenterActor()
         {
+            ActorPathPrinter.Print(Self);
+
             Initializing();
         }
 
@@ -32,10 +34,12 @@ namespace GithubActors.Actors
             {
                 ((IWithUnboundedStash)this).Stash.Stash();
             });
+
             Receive<IEnumerable<SimilarRepo>>(repos =>
             {
                 ((IWithUnboundedStash)this).Stash.Stash();
             });
+
             Receive<JobFailed>(failed =>
             {
                 ((IWithUnboundedStash)this).Stash.Stash();
@@ -69,7 +73,7 @@ namespace GithubActors.Actors
 
         private ActorSelection GetRepoResultsCoordinator()
         {
-            return Context.ActorSelection(ActorPaths.RepoCoordinator);
+            return Context.ActorSelection(ActorPaths.RepoResultsCoordinator);
         }
 
         protected override void PreStart()

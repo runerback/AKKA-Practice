@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="GithubActors.Views.LauncherForm"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:ClassModifier="internal">
+             x:ClassModifier="internal"
+             VerticalAlignment="Center">
     <Grid Margin="6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

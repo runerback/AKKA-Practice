@@ -7,9 +7,12 @@ namespace GithubActors.Actors
     sealed class RepoLauncherActor : ReceiveActor, IWithUnboundedStash
     {
         private IActorRef repoValidatorActor;
+        private IActorRef githubCommanderActor;
 
         public RepoLauncherActor()
         {
+            ActorPathPrinter.Print(Self);
+
             Initializing();
         }
 
@@ -24,9 +27,15 @@ namespace GithubActors.Actors
                     .Tell(PageNavigate.Create<Views.LauncherForm, ViewModels.LauncherForm>(
                         "Who Starred This Repo?", true));
 
+                var githubClientFactor = GithubClientFactory.GetClientFactory(auth.Token);
+
                 repoValidatorActor = App.GithubActors.ActorOf(
-                    Props.Create<GetHubRepoValidatorActor>(GithubClientFactory.GetClientFactory(auth.Token)),
+                    Props.Create<GetHubRepoValidatorActor>(githubClientFactor),
                     ActorNames.RepoValidator);
+
+                githubCommanderActor = App.GithubActors.ActorOf(
+                    Props.Create<GithubCommanderActor>(githubClientFactor),
+                    ActorNames.GithubCommander);
 
                 BecomeReady();
             });
@@ -58,9 +67,9 @@ namespace GithubActors.Actors
                 //ask the GithubCommander if we can accept this job
                 var canAccessJob = new CanAcceptJob(repository.Name, repository.Owner.Login);
 
-                Context.ActorSelection(ActorPaths.GithubCommander).Tell(canAccessJob);
-
                 GetRepoStatusCoordinator().Tell(canAccessJob);
+
+                githubCommanderActor.Tell(canAccessJob);
             });
 
             // REPO is valid, but there already has job running

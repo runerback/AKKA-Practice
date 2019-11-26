@@ -10,6 +10,8 @@ namespace GithubActors.Actors
 
         public PageTitleActor(Action<string> setTitle)
         {
+            ActorPathPrinter.Print(Self);
+
             this.setTitle = setTitle;
 
             Receive<PageTitle>(title => this.setTitle(title.Value));

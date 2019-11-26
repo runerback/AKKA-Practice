@@ -16,6 +16,8 @@ namespace GithubActors.Actors
             Func<RepoRequestProgress, RepoRequestProgress> updateProgress,
             Action<string> updateStatus)
         {
+            ActorPathPrinter.Print(Self);
+
             resultsActor = Context.ActorOf(
                 Props.Create<RepoResultsActor>(addRepoResult),
                 ActorNames.RepoResults);
@@ -28,10 +30,12 @@ namespace GithubActors.Actors
             {
                 statusActor.Tell(stats);
             });
+
             Receive<IEnumerable<SimilarRepo>>(repos =>
            {
                resultsActor.Tell(repos);
            });
+
             Receive<JobFailed>(failed =>
             {
                 statusActor.Tell(failed);

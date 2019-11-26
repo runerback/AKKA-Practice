@@ -28,7 +28,7 @@ namespace GithubActors.Actors
 
             Receive<CanAcceptJob>(ask =>
             {
-                UpdateStatus($"Asking {ask} . . .");
+                UpdateStatus($"Asking job for {ask} . . .");
                 UpdateColor(StatusColors.Querying);
             });
 

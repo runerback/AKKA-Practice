@@ -7,6 +7,8 @@ namespace GithubActors.Actors
     {
         public DispatcherCommandNotifierActor()
         {
+            ActorPathPrinter.Print(Self);
+
             Receive<NotifyDispatcherCommandCanExecuteChanged>(msg =>
            {
                msg.Command.NotifyCanExecuteChanged();

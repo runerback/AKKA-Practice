@@ -13,6 +13,8 @@ namespace GithubActors.Actors
 
         public PageNavigatorActor(Action<Page> navigateTo)
         {
+            ActorPathPrinter.Print(Self);
+
             this.navigateTo = navigateTo ?? throw new ArgumentNullException(nameof(navigateTo));
 
             Receive<PageNavigate>(navigation =>

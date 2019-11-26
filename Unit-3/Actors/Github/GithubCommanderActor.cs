@@ -17,6 +17,8 @@ namespace GithubActors.Actors
 
         public GithubCommanderActor(Func<IGitHubClient> gitHubClientFactory)
         {
+            ActorPathPrinter.Print(Self);
+
             this.gitHubClientFactory = gitHubClientFactory ??
                 throw new ArgumentNullException(nameof(gitHubClientFactory));
 

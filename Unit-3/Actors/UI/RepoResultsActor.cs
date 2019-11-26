@@ -12,6 +12,8 @@ namespace GithubActors.Actors
 
         public RepoResultsActor(Action<Repo> addRepoResult)
         {
+            ActorPathPrinter.Print(Self);
+
             this.addRepoResult = addRepoResult ??
                 throw new ArgumentNullException(nameof(addRepoResult));
 

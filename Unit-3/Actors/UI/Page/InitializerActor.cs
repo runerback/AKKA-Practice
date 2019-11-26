@@ -7,8 +7,12 @@ namespace GithubActors.Actors
     {
         public InitializerActor()
         {
+            ActorPathPrinter.Print(Self);
+
             Receive<Initialize>(_ =>
             {
+                System.Console.WriteLine("Initialize");
+
                 App.UIActors
                     .ActorSelection(ActorPaths.DispatcherCoordinator)
                     .Tell(PageNavigate.Create<Views.GithubAuth, ViewModels.GithubAuth>("Sign in to GitHub"));

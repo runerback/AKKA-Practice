@@ -10,6 +10,8 @@ namespace GithubActors.Actors
 
         public BusyStatusUpdatorActor(Action<bool> setIsBusy)
         {
+            ActorPathPrinter.Print(Self);
+
             this.setIsBusy = setIsBusy ?? throw new ArgumentNullException(nameof(setIsBusy));
 
             Receive<SystemBusy>(_ => this.setIsBusy(true));

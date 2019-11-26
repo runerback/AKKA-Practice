@@ -42,8 +42,6 @@
                                 Padding="{TemplateBinding Padding}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
                                 Content="{Binding Page.View, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" 
                                 />
                         </ControlTemplate>

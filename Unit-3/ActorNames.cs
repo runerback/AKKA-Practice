@@ -8,6 +8,7 @@
         public const string AuthStatusCooridnator = "auth_status_coor";
         public const string GithubCommander = "commander";
         public const string GithubCoordinator = "github_coor";
+        public const string GithubWorker = "github_worker";
 
         public const string UI = "UIActors";
 
@@ -23,7 +24,7 @@
         public const string RepoStatusCoordinator = "repo_status_coor";
         public const string RepoBusy = "repo_busy";
         public const string RepoStatus = "repo_status";
-        public const string RepoCoordinator = "repo_result_coor";
+        public const string RepoResultsCoordinator = "repo_result_coor";
         public const string MainForm = "repo_mainform";
         public const string RepoProgress = "repo_progress";
         public const string RepoResults = "repo_results";

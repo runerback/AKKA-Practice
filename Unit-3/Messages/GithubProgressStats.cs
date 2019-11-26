@@ -7,7 +7,7 @@ namespace GithubActors.Messages
     /// 
     /// Immutable.
     /// </summary>
-    public class GithubProgressStats
+    sealed class GithubProgressStats
     {
         public int ExpectedUsers { get; }
         public int UsersThusFar { get; }

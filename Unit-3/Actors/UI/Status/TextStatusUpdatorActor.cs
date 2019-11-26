@@ -10,6 +10,8 @@ namespace GithubActors.Actors
 
         public TextStatusUpdatorActor(Action<string> updateStatus, Action<string> updateStatusColor)
         {
+            ActorPathPrinter.Print(Self);
+
             this.updateStatus = updateStatus ??
                 throw new ArgumentNullException(nameof(updateStatus));
             this.updateStatusColor = updateStatusColor ??

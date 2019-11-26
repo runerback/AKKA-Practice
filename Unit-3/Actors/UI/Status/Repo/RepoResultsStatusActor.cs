@@ -14,8 +14,22 @@ namespace GithubActors.Actors
 
         public RepoResultsStatusActor(Func<RepoRequestProgress, RepoRequestProgress> updateProgress, Action<string> updateStatus)
         {
+            ActorPathPrinter.Print(Self);
+
             this.updateProgress = updateProgress;
             this.updateStatus = updateStatus;
+
+            Receive<GithubProgressStats>(
+                stats => stats.ExpectedUsers == 0 && stats.IsFinished,
+                stats =>
+                {
+                    if (!progressInitialized)
+                    {
+                        this.updateProgress(new RepoRequestProgress(0));
+                        progressInitialized = true;
+                    }
+                    this.updateStatus("no user found.");
+                });
 
             //progress update
             Receive<GithubProgressStats>(
@@ -52,7 +66,7 @@ namespace GithubActors.Actors
                     this.updateProgress(null).Fail();
                 }
 
-                this.updateStatus($"Failed to gather data for Github repository {failed.Owner} / {failed.Repo}");
+                this.updateStatus($"Failed to gather data for Github repository {failed}");
             });
         }
     }

@@ -16,6 +16,8 @@ namespace GithubActors.Actors
 
         public GithubWorkerActor(Func<IGitHubClient> gitHubClientFactory)
         {
+            ActorPathPrinter.Print(Self);
+
             _gitHubClientFactory = gitHubClientFactory;
             InitialReceives();
         }

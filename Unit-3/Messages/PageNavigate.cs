@@ -1,18 +1,21 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 
 namespace GithubActors.Messages
 {
     sealed class PageNavigate
     {
-        private PageNavigate(Page page, string title, bool stash)
+        private PageNavigate(Func<Page> pageFactory, string title, bool stash)
         {
-            Page = page;
+            pageLazy = new Lazy<Page>(pageFactory);
             Title = title;
             Stash = stash;
         }
 
-        public Page Page { get; }
+        private readonly Lazy<Page> pageLazy;
+
+        public Page Page => pageLazy.Value;
         public string Title { get; }
         public bool Stash { get; }
 
@@ -28,9 +31,7 @@ namespace GithubActors.Messages
             where TContext : class, INotifyPropertyChanged, new()
         {
             return new PageNavigate(
-                new Page(
-                    new TView(),
-                    new TContext()),
+                () => new Page(new TView(), new TContext()),
                 title,
                 stash);
         }

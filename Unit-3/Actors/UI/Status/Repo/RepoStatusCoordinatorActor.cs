@@ -14,10 +14,12 @@ namespace GithubActors.Actors
             Action<string> updateStatusColor,
             Action<bool> setIsBusy)
         {
-            repoStatusActor = App.UIActors.ActorOf(
+            ActorPathPrinter.Print(Self);
+
+            repoStatusActor = Context.ActorOf(
                 Props.Create<RepoStatusActor>(updateStatus, updateStatusColor),
                 ActorNames.RepoStatus);
-            busyStatusActor = App.UIActors.ActorOf(
+            busyStatusActor = Context.ActorOf(
                 Props.Create<BusyStatusUpdatorActor>(setIsBusy),
                 ActorNames.RepoBusy);
             

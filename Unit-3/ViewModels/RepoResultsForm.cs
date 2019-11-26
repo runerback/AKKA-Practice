@@ -35,7 +35,7 @@ namespace GithubActors.ViewModels
 
             App.UIActors.ActorOf(
                 Props.Create<RepoResultsCoordinatorActor>(addRepo, updateProgress, updateStatus),
-                ActorNames.RepoCoordinator);
+                ActorNames.RepoResultsCoordinator);
         }
         
         private readonly ObservableCollection<Repo> repos = new ObservableCollection<Repo>();

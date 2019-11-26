@@ -14,6 +14,8 @@ namespace GithubActors.Actors
             Action<string> updateStatusColor,
             Action<bool> setIsBusy)
         {
+            ActorPathPrinter.Print(Self);
+
             authStatusActor = Context.ActorOf(
                 Props.Create<AuthStatusActor>(updateStatus, updateStatusColor),
                 ActorNames.AuthStatus);

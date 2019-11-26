@@ -86,7 +86,8 @@ namespace GithubActors.ViewModels
         {
             App.UIActors
                 .ActorSelection(ActorPaths.RepoLauncher)
-                .Tell(new ValidateRepo(repoUrl ?? "https://github.com/runerback/AKKA-Practice"));
+                .Tell(new ValidateRepo(string.IsNullOrWhiteSpace(repoUrl) ?
+                    "https://github.com/runerback/AKKA-Practice" : repoUrl));
         }
     }
 }

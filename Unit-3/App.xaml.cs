@@ -1,7 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Actors;
 using GithubActors.Messages;
-using System;
 using System.Windows;
 
 namespace GithubActors
@@ -21,25 +20,20 @@ namespace GithubActors
         public App()
         {
             Exit += OnExiting;
+
+            GithubActors.ActorOf(
+                   Props.Create<GithubAuthenticationActor>(),
+                   ActorNames.Auth);
+            UIActors.ActorOf(Props.Create<InitializerActor>(), ActorNames.Initializer);
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            GithubActors.ActorOf(
-                   Props.Create<GithubAuthenticationActor>()
-                        .WithDispatcher("akka.actor.synchronized-dispatcher"),
-                   ActorNames.Auth);
-
             UIActors.ActorOf(
                 Props.Create<DispatcherCoordinatorActor>(),
                 ActorNames.DispatcherCoordinator);
-
-            UIActors.ActorOf(
-                Props.Create<InitializerActor>()
-                    .WithDispatcher("akka.actor.synchronized-dispatcher"), 
-                ActorNames.Initializer
-                )
-                .Tell(new Initialize());
+            
+            UIActors.ActorSelection(ActorPaths.Initializer).Tell(new Initialize());
         }
         
         private void OnExiting(object sender, ExitEventArgs e)

@@ -7,6 +7,7 @@ namespace GithubActors.Actors
     {
         public GithubAuthenticationActor()
         {
+            ActorPathPrinter.Print(Self);
             Unauthenticated();
         }
 
@@ -54,8 +55,7 @@ namespace GithubActors.Actors
                 GetAuthStatusCoordinator().Tell(success);
 
                 var launcherActor = App.UIActors.ActorOf(
-                    Props.Create<RepoLauncherActor>()
-                        .WithDispatcher("akka.actor.synchronized-dispatcher"),
+                    Props.Create<RepoLauncherActor>(),
                     ActorNames.RepoLauncher);
                 launcherActor.Tell(success);
             });

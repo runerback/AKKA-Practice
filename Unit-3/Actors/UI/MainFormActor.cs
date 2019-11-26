@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using GithubActors.Messages;
+using System;
 using System.Collections.Generic;
 
 namespace GithubActors.Actors
@@ -10,6 +11,8 @@ namespace GithubActors.Actors
 
         public MainFormActor()
         {
+            ActorPathPrinter.Print(Self);
+
             repoResultsPresenterActor = Context.ActorOf(
                 Props.Create<RepoResultsPresenterActor>(),
                 ActorNames.RepoResultsPresenter);
@@ -34,8 +37,10 @@ namespace GithubActors.Actors
         private void BecomeBusy(ProcessRepo repo)
         {
             repoResultsPresenterActor.Tell(repo);
+
+            App.GithubActors.ActorSelection(ActorPaths.GithubCoordinator).Tell(new SubscribeToProgressUpdates(Self));
+
             Become(Busy);
-            Context.ActorSelection(ActorPaths.GithubCoordinator).Tell(new SubscribeToProgressUpdates(Self));
         }
 
         /// <summary>

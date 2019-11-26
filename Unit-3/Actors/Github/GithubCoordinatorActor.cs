@@ -27,6 +27,8 @@ namespace GithubActors.Actors
 
         public GithubCoordinatorActor(Func<IGitHubClient> gitHubClientFactory)
         {
+            ActorPathPrinter.Print(Self);
+
             this.gitHubClientFactory = gitHubClientFactory ??
                 throw new ArgumentNullException(nameof(gitHubClientFactory));
 
@@ -35,9 +37,11 @@ namespace GithubActors.Actors
 
         protected override void PreStart()
         {
-            githubWorker = Context.ActorOf(Props.Create<GithubWorkerActor>(gitHubClientFactory));
+            githubWorker = Context.ActorOf(
+                Props.Create<GithubWorkerActor>(gitHubClientFactory),
+                ActorNames.GithubWorker);
         }
-        
+
         private void Waiting()
         {
             Receive<CanAcceptJob>(job => Sender.Tell(new AbleToAcceptJob(job)));
@@ -61,7 +65,7 @@ namespace GithubActors.Actors
 
             Become(Working);
         }
-        
+
         private void Working()
         {
             //received a downloaded user back from the github worker
@@ -80,7 +84,7 @@ namespace GithubActors.Actors
                 }
             });
 
-            Receive<PublishUpdate>(update =>
+            Receive<PublishUpdate>(_ =>
             {
                 //check to see if the job is done
                 if (_receivedInitialUsers && _githubProgressStats.IsFinished)
@@ -88,8 +92,11 @@ namespace GithubActors.Actors
                     _githubProgressStats = _githubProgressStats.Finish();
 
                     //all repos minus forks of the current one
-                    var sortedSimilarRepos = _similarRepos.Values
-                        .Where(x => x.Repo.Name != _currentRepo.Repo).OrderByDescending(x => x.SharedStarrers).ToList();
+                    var sortedSimilarRepos = _similarRepos
+                        .Values
+                        .Where(x => x.Repo.Name != _currentRepo.Repo)
+                        .OrderByDescending(x => x.SharedStarrers)
+                        .ToArray();
                     foreach (var subscriber in _subscribers)
                     {
                         subscriber.Tell(sortedSimilarRepos);
@@ -105,7 +112,7 @@ namespace GithubActors.Actors
 
             //completed our initial job - we now know how many users we need to query
             Receive<IEnumerable<User>>(
-                users => users?.Any()??false,
+                users => users?.Any() ?? false,
                 users =>
                 {
                     _receivedInitialUsers = true;
@@ -124,25 +131,30 @@ namespace GithubActors.Actors
                 if (_subscribers.Count == 0)
                 {
                     Context.System.Scheduler.ScheduleTellRepeatedly(
-                        TimeSpan.FromMilliseconds(100), 
-                        TimeSpan.FromMilliseconds(100),
-                        Self, 
-                        PublishUpdate.Instance, 
-                        Self, 
+                        TimeSpan.FromMilliseconds(1000),
+                        TimeSpan.FromMilliseconds(1000),
+                        Self,
+                        PublishUpdate.Instance,
+                        Self,
                         _publishTimer);
                 }
 
                 _subscribers.Add(updates.Subscriber);
             });
 
+            ReceiveQuery();
+        }
+
+        private void ReceiveQuery()
+        {
             //query failed, but can be retried
             Receive<RetryableQuery>(
-                query => query.CanRetry, 
+                query => query.CanRetry,
                 query => githubWorker.Tell(query));
 
             //query failed, can't be retried, and it's a QueryStarrers operation - means the entire job failed
             Receive<RetryableQuery>(
-                query => !query.CanRetry && query.Query is QueryStarrers, 
+                query => !query.CanRetry && query.Query is QueryStarrers,
                 query =>
                 {
                     _receivedInitialUsers = true;
@@ -155,7 +167,7 @@ namespace GithubActors.Actors
 
             //query failed, can't be retried, and it's a QueryStarrers operation - means individual operation failed
             Receive<RetryableQuery>(
-                query => !query.CanRetry && query.Query is QueryStarrer, 
+                query => !query.CanRetry && query.Query is QueryStarrer,
                 query => _githubProgressStats.IncrementFailures());
         }
 

@@ -13,6 +13,8 @@ namespace GithubActors.Actors
 
         public GetHubRepoValidatorActor(Func<IGitHubClient> gitHubClientFactory)
         {
+            ActorPathPrinter.Print(Self);
+
             this.gitHubClientFactory = gitHubClientFactory ??
                 throw new ArgumentNullException(nameof(gitHubClientFactory));
 
@@ -40,12 +42,13 @@ namespace GithubActors.Actors
                         {
                             return new InvalidRepo(
                                 repoAddress.URL, 
-                                t.Exception != null ? t.Exception.GetBaseException().Message : "Unknown Octokit error");
+                                t.Exception != null ? 
+                                    t.Exception.GetBaseException().Message : "Unknown Octokit error");
                         }
 
                         return t.Result;
                     })
-                    .PipeTo(Self, sender);
+                    .PipeTo(sender);
             });
         }
 

@@ -7,6 +7,7 @@
         public RepoRequestProgress(int total, int current = 0)
         {
             Total = total;
+            Empty = total == 0;
             this.current = current;
         }
 
@@ -17,7 +18,7 @@
             get { return current; }
             set
             {
-                if (current != value && !Failed)
+                if (current != value && !Failed && !Empty)
                 {
                     current = value;
                     NotifyPropertyChanged(nameof(Current));
@@ -26,16 +27,12 @@
         }
 
         public bool Failed { get; private set; }
+        public bool Empty { get; }
 
         public void Fail()
         {
             if (!Failed)
             {
-                Total = 1;
-                NotifyPropertyChanged(nameof(Total));
-
-                Current = 1;
-
                 Failed = true;
                 NotifyPropertyChanged(nameof(Failed));
             }
